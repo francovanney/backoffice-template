@@ -1,6 +1,6 @@
-# React + Vite + TypeScript Template (react-vite-ui)
+# React + Vite + TypeScript Template (backoffice-admin)
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Dan5py/react-vite-ui/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Dan5py/backoffice-admin/blob/main/LICENSE)
 
 A React + Vite template powered by shadcn/ui.
 
@@ -28,18 +28,18 @@ Make sure you have the following installed on your development machine:
 
 ## 🚀 Getting Started
 
-Follow these steps to get started with the react-vite-ui template:
+Follow these steps to get started with the backoffice-admin template:
 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/dan5py/react-vite-ui.git
+   git clone https://github.com/dan5py/backoffice-admin.git
    ```
 
 2. Navigate to the project directory:
 
    ```bash
-   cd react-vite-ui
+   cd backoffice-admin
    ```
 
 3. Install the dependencies:
@@ -66,7 +66,7 @@ Follow these steps to get started with the react-vite-ui template:
 The project structure follows a standard React application layout:
 
 ```python
-react-vite-ui/
+backoffice-admin/
   ├── node_modules/      # Project dependencies
   ├── public/            # Public assets
   ├── src/               # Application source code
