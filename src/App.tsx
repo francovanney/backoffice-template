@@ -1,26 +1,16 @@
-import CountBtn from "@/components/count-btn";
-import ReactSVG from "@/assets/react.svg";
-import { Badge } from "@/components/ui/badge";
+import GlobalLayout from "./views/GlobalLayout";
+import Header from "./views/Header";
 
 function App() {
   return (
-    <main className="flex flex-col items-center justify-center h-screen">
-      <div className="flex flex-col items-center gap-y-4">
-        <div className="inline-flex items-center gap-x-4">
-          <img src={ReactSVG} alt="React Logo" className="w-32" />
-          <span className="text-6xl">+</span>
-          <img src={"/vite.svg"} alt="Vite Logo" className="w-32" />
-        </div>
-        <a
-          href="https://ui.shadcn.com"
-          rel="noopener noreferrer nofollow"
-          target="_blank"
-        >
-          <Badge variant="outline">shadcn/ui</Badge>
-        </a>
-        <CountBtn />
+    <>
+      <div className="fixed top-0 left-0 w-full z-50">
+        <Header />
       </div>
-    </main>
+      <main className="w-full flex-1 flex min-h-0 p-0 m-0 overflow-hidden">
+        <GlobalLayout />
+      </main>
+    </>
   );
 }
 
