@@ -12,10 +12,8 @@ export default function EventModal({
   open: boolean;
   onClose: () => void;
 }) {
-  const { register, handleSubmit, watch } = useForm();
-  const date = watch("date");
+  const { register, handleSubmit } = useForm();
   const onSubmit = (data: any) => {
-    // Aquí puedes manejar el submit
     console.log(data);
   };
   return (
