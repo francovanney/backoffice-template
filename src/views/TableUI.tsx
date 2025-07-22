@@ -1,5 +1,5 @@
-import { useState } from "react";
-
+import { useModal } from "@/hooks/useModal";
+import EventEditModal from "@/components/EventEditModal";
 import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
@@ -21,14 +21,13 @@ import {
 } from "@/components/ui/icons";
 
 import Filter from "@/components/filter";
-import EventModal from "@/components/event-modal";
 
 import { useShowsQuery } from "@/services/useShowsQuery";
 import { IShow } from "@/services/interfaces/IShow";
 
 const TableUI = () => {
-  const [modalOpen, setModalOpen] = useState(false);
   const { data: shows, isLoading, isError } = useShowsQuery();
+  const { openModal } = useModal();
 
   const SkeletonTableRows = () => {
     return (
@@ -72,8 +71,7 @@ const TableUI = () => {
   if (isLoading) {
     return (
       <div className="w-full">
-        <Filter onAdd={() => setModalOpen(true)} />
-        <EventModal open={modalOpen} onClose={() => setModalOpen(false)} />
+        <Filter />
         <Table>
           <TableCaption>Lista de shows.</TableCaption>
           <TableHeader>
@@ -99,8 +97,7 @@ const TableUI = () => {
 
   return (
     <div className="w-full">
-      <Filter onAdd={() => setModalOpen(true)} />
-      <EventModal open={modalOpen} onClose={() => setModalOpen(false)} />
+      <Filter />
       <Table>
         <TableCaption>Lista de shows.</TableCaption>
         <TableHeader>
@@ -181,7 +178,12 @@ const TableUI = () => {
                   ) : null}
                 </TableCell>
                 <TableCell className="flex gap-2 justify-center">
-                  <Button size="icon" variant="ghost" aria-label="Editar">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    aria-label="Editar"
+                    onClick={() => openModal(<EventEditModal show={show} />)}
+                  >
                     <EditIcon className="text-primary" />
                   </Button>
                   <Button size="icon" variant="ghost" aria-label="Eliminar">
