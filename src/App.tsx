@@ -1,9 +1,11 @@
+import { Toaster } from "react-hot-toast";
 import GlobalLayout from "./views/GlobalLayout";
 import Header from "./views/Header";
 
 function App() {
   return (
     <>
+      <Toaster />
       <div className="fixed top-0 left-0 w-full z-50">
         <Header />
       </div>

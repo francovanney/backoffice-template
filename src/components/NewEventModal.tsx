@@ -1,30 +1,28 @@
+import { useState } from "react";
+import toast from "react-hot-toast";
 import { useForm, Controller } from "react-hook-form";
-import { useModal } from "@/hooks/useModal";
-import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+
+import { eventModalSchema } from "@/schemas/eventModalSchema";
+import { useModal } from "@/hooks/useModal";
+import { useShowMutation } from "@/services/useShowMutation";
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectItem } from "@/components/ui/select";
 import { FormInput } from "@/components/ui/form-input";
+import { FileUploader } from "react-drag-drop-files";
 import { X } from "lucide-react";
 
-const eventModalSchema = yup.object().shape({
-  event: yup
-    .string()
-    .required("Evento es un campo obligatorio")
-    .max(20, "Máximo 20 caracteres"),
-  category: yup.string().required("Categoría es un campo obligatorio"),
-  date: yup.string().required("Fecha es un campo obligatorio"),
-  venue: yup.string().required("Venue es un campo obligatorio"),
-  address: yup.string().optional(),
-  instagram: yup.string().optional(),
-  web: yup.string().optional(),
-  ticket: yup.string().optional(),
-});
+import { Event } from "@/types/event";
 
-export default function NewEventModal() {
+interface NewEventModalProps {
+  event?: Event;
+}
+
+export default function NewEventModal({ event }: NewEventModalProps) {
   const { close } = useModal();
-  // 2. Integra el schema con react-hook-form
+  const fileTypes = ["JPG", "JPEG"];
+  const [file, setFile] = useState<File | null>(null);
   const {
     register,
     handleSubmit,
@@ -32,10 +30,71 @@ export default function NewEventModal() {
     control,
   } = useForm({
     resolver: yupResolver(eventModalSchema),
+    defaultValues: event
+      ? {
+          title: event.title,
+          categories: event.categories,
+          event_date: event.event_date ? event.event_date.split("T")[0] : "",
+          venue: event.venue,
+          address: event.address || "",
+          instagram: event.instagram || "",
+          web: event.web || "",
+          url: event.url || "",
+        }
+      : {},
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const handleChange = (uploadedFile: File | File[]) => {
+    const singleFile = Array.isArray(uploadedFile)
+      ? uploadedFile[0]
+      : uploadedFile;
+
+    if (singleFile.size > 1048576) {
+      toast.error(
+        "El archivo es demasiado grande. El tamaño máximo permitido es 1MB."
+      );
+    } else {
+      setFile(singleFile);
+      toast.success("Imagen cargada correctamente");
+    }
+  };
+
+  type EventFormData = {
+    title: string;
+    categories: (string | undefined)[];
+    event_date: string;
+    venue: string;
+    address?: string;
+    instagram?: string;
+    web?: string;
+    url?: string;
+  };
+
+  const showMutation = useShowMutation();
+
+  const onSubmit = (data: EventFormData) => {
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("event_date", data.event_date);
+    formData.append("venue", data.venue);
+    if (data.address) formData.append("address", data.address);
+    if (data.instagram) formData.append("instagram", data.instagram);
+    if (data.web) formData.append("web", data.web);
+    if (data.url) formData.append("url", data.url);
+    data.categories.filter(Boolean).forEach((cat) => {
+      if (cat) formData.append("categories", cat);
+    });
+    if (file) formData.append("image", file);
+
+    showMutation.mutate(formData, {
+      onSuccess: () => {
+        toast.success("Evento creado correctamente");
+        close();
+      },
+      onError: () => {
+        toast.error("Error al guardar el evento");
+      },
+    });
   };
 
   return (
@@ -53,7 +112,9 @@ export default function NewEventModal() {
         >
           <div className="flex flex-col h-full overflow-y-auto">
             <div className="bg-background px-6 py-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold">Nuevo evento</h2>
+              <h2 className="text-lg font-bold">
+                {event ? "Editar evento" : "Nuevo evento"}
+              </h2>
               <X
                 className="ml-4 font-bold cursor-pointer"
                 onClick={close}
@@ -69,32 +130,41 @@ export default function NewEventModal() {
                 <FormInput
                   label="Evento"
                   type="text"
-                  register={register("event")}
-                  error={errors.event?.message}
+                  register={register("title")}
+                  error={errors.title?.message}
                 />
-                <FormInput label="Categoría" error={errors.category?.message}>
+                <FormInput label="Categoría" error={errors.categories?.message}>
                   <Controller
-                    name="category"
+                    name="categories"
                     control={control}
-                    render={({ field }) => (
-                      <Select
-                        value={field.value || ""}
-                        onValueChange={field.onChange}
-                        name="category"
-                      >
-                        <SelectItem value="Teatro">Teatro</SelectItem>
-                        <SelectItem value="Música">Música</SelectItem>
-                        <SelectItem value="Evento">Evento</SelectItem>
-                        <SelectItem value="Gastronomía">Gastronomía</SelectItem>
-                      </Select>
-                    )}
+                    render={({ field }) => {
+                      const currentValue =
+                        Array.isArray(field.value) && field.value.length > 0
+                          ? field.value[0]
+                          : "";
+
+                      return (
+                        <Select
+                          value={currentValue}
+                          onValueChange={(value) => field.onChange([value])}
+                          name="categories"
+                        >
+                          <SelectItem value="Teatro">Teatro</SelectItem>
+                          <SelectItem value="Música">Música</SelectItem>
+                          <SelectItem value="Evento">Evento</SelectItem>
+                          <SelectItem value="Gastronomía">
+                            Gastronomía
+                          </SelectItem>
+                        </Select>
+                      );
+                    }}
                   />
                 </FormInput>
                 <FormInput
                   label="Fecha"
                   type="date"
-                  register={register("date")}
-                  error={errors.date?.message}
+                  register={register("event_date")}
+                  error={errors.event_date?.message}
                 />
                 <FormInput
                   label="Venue"
@@ -115,14 +185,52 @@ export default function NewEventModal() {
                   span="https://instagram.com/"
                 />
                 <FormInput label="Web" type="text" register={register("web")} />
+                <FormInput label="Imagen">
+                  <div className="space-y-3">
+                    <FileUploader
+                      handleChange={handleChange}
+                      name="image"
+                      types={fileTypes}
+                      multiple={false}
+                      label="Arrastre o suba una imagen"
+                      hoverTitle="Arrastre aquí"
+                    />
+                    {file && (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">
+                          Archivo seleccionado: {file.name}
+                        </p>
+                        <div className="mt-2 relative w-full h-32 border rounded-md overflow-hidden">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt="Vista previa"
+                            className="object-contain w-full h-full"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {!file && event?.image_url && (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">Imagen actual:</p>
+                        <div className="mt-2 relative w-full h-32 border rounded-md overflow-hidden">
+                          <img
+                            src={event.image_url}
+                            alt="Imagen actual"
+                            className="object-contain w-full h-full"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </FormInput>
                 <FormInput
-                  label="Ticket"
+                  label="URL Ticket"
                   type="text"
-                  register={register("ticket")}
+                  register={register("url")}
                 />
                 <div className="flex justify-end pt-2">
                   <Button className="w-full mt-2" type="submit">
-                    Agregar
+                    {event ? "Actualizar" : "Agregar"}
                   </Button>
                 </div>
               </form>

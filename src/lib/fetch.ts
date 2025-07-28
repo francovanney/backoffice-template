@@ -1,11 +1,17 @@
+const token = import.meta.env.VITE_TOKEN_SECRET;
+
 async function fetchWithAuth(
   url: string,
   method: string = "GET",
-  body: any = null
+  body: Record<string, unknown> | FormData | null = null
 ) {
-  const headers = {
-    "Content-Type": "application/json",
+  const isFormData = body instanceof FormData;
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${token}`,
   };
+  if (!isFormData) {
+    headers["Content-Type"] = "application/json";
+  }
 
   const config: RequestInit = {
     method,
@@ -13,7 +19,7 @@ async function fetchWithAuth(
   };
 
   if (body) {
-    config.body = JSON.stringify(body);
+    config.body = isFormData ? body : JSON.stringify(body);
   }
 
   const response = await fetch(url, config);
@@ -29,15 +35,24 @@ export function fetchGet(url: string) {
   return fetchWithAuth(url);
 }
 
-export function fetchPost(url: string, body: any) {
+export function fetchPost(
+  url: string,
+  body: Record<string, unknown> | FormData
+) {
   return fetchWithAuth(url, "POST", body);
 }
 
-export function fetchPut(url: string, body: any) {
+export function fetchPut(
+  url: string,
+  body: Record<string, unknown> | FormData
+) {
   return fetchWithAuth(url, "PUT", body);
 }
 
-export function fetchPatch(url: string, body: any) {
+export function fetchPatch(
+  url: string,
+  body: Record<string, unknown> | FormData
+) {
   return fetchWithAuth(url, "PATCH", body);
 }
 

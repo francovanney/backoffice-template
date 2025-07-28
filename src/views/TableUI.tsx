@@ -20,7 +20,7 @@ import {
   DeleteIcon,
 } from "@/components/ui/icons";
 
-import Filter from "@/components/filter";
+import Filter from "@/components/Filter";
 
 import { useShowsQuery } from "@/services/useShowsQuery";
 import { IShow } from "@/services/interfaces/IShow";

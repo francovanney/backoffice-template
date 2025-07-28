@@ -1,25 +1,12 @@
 import { useForm, Controller } from "react-hook-form";
 import { useModal } from "@/hooks/useModal";
-import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { eventEditModalSchema } from "@/schemas/eventEditModalSchema";
 import { Button } from "@/components/ui/button";
 import { Select, SelectItem } from "@/components/ui/select";
 import { FormInput } from "@/components/ui/form-input";
 import { X } from "lucide-react";
 import { IShow } from "@/services/interfaces/IShow";
-
-const eventModalSchema = yup.object().shape({
-  event: yup
-    .string()
-    .required("Evento es un campo obligatorio")
-    .max(20, "Máximo 20 caracteres"),
-  category: yup.string().required("Categoría es un campo obligatorio"),
-  date: yup.string().required("Fecha es un campo obligatorio"),
-  venue: yup.string().required("Venue es un campo obligatorio"),
-  address: yup.string().optional(),
-  instagram: yup.string().optional(),
-  web: yup.string().optional(),
-});
 
 interface EventEditModalProps {
   show: IShow;
@@ -33,7 +20,7 @@ export default function EventEditModal({ show }: EventEditModalProps) {
     formState: { errors },
     control,
   } = useForm({
-    resolver: yupResolver(eventModalSchema),
+    resolver: yupResolver(eventEditModalSchema),
     defaultValues: {
       event: show.title,
       category: show.categories?.[0] || "",
@@ -46,7 +33,6 @@ export default function EventEditModal({ show }: EventEditModalProps) {
   });
 
   const onSubmit = (data: any) => {
-    // Aquí iría la lógica para actualizar el evento
     console.log("Editar evento:", data);
     close();
   };
