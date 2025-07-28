@@ -1,3 +1,4 @@
+import Select from "react-select";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useForm, Controller } from "react-hook-form";
@@ -9,7 +10,6 @@ import { useCreateShowMutation } from "@/services/useCreateShowMutation";
 import { useShowsQuery } from "@/services/useShowsQuery";
 
 import { Button } from "@/components/ui/button";
-import { Select, SelectItem } from "@/components/ui/select";
 import { FormInput } from "@/components/ui/form-input";
 import { FileUploader } from "react-drag-drop-files";
 import { X } from "lucide-react";
@@ -24,6 +24,7 @@ export default function NewEventModal({ event }: NewEventModalProps) {
   const { close } = useModal();
   const fileTypes = ["JPG", "JPEG"];
   const [file, setFile] = useState<File | null>(null);
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
   const {
     register,
     handleSubmit,
@@ -141,29 +142,51 @@ export default function NewEventModal({ event }: NewEventModalProps) {
                   register={register("title")}
                   error={errors.title?.message}
                 />
-                <FormInput label="Categoría" error={errors.categories?.message}>
+                <FormInput
+                  label="Categorías"
+                  error={errors.categories?.message}
+                >
                   <Controller
                     name="categories"
                     control={control}
                     render={({ field }) => {
-                      const currentValue =
-                        Array.isArray(field.value) && field.value.length > 0
-                          ? field.value[0]
-                          : "";
+                      const options = [
+                        { value: "Teatro", label: "Teatro" },
+                        { value: "Música", label: "Música" },
+                        { value: "Evento", label: "Evento" },
+                        { value: "Gastronomía", label: "Gastronomía" },
+                        { value: "Aire Libre", label: "Aire Libre" },
+                        { value: "Gratis", label: "Gratis" },
+                        { value: "Feria", label: "Feria" },
+                      ];
 
                       return (
                         <Select
-                          value={currentValue}
-                          onValueChange={(value) => field.onChange([value])}
-                          name="categories"
-                        >
-                          <SelectItem value="Teatro">Teatro</SelectItem>
-                          <SelectItem value="Música">Música</SelectItem>
-                          <SelectItem value="Evento">Evento</SelectItem>
-                          <SelectItem value="Gastronomía">
-                            Gastronomía
-                          </SelectItem>
-                        </Select>
+                          isMulti
+                          options={options}
+                          value={options.filter((opt) =>
+                            field.value?.includes(opt.value)
+                          )}
+                          onChange={(selected) => {
+                            const values = Array.isArray(selected)
+                              ? selected.map((opt) => opt.value)
+                              : [];
+                            if (values.length < 3) {
+                              field.onChange(values);
+                              setMenuIsOpen(true);
+                            } else if (values.length === 3) {
+                              field.onChange(values);
+                              setMenuIsOpen(false);
+                            } else {
+                              toast.error("Máximo 3 categorías permitidas");
+                            }
+                          }}
+                          placeholder="Selecciona hasta 3 categorías"
+                          closeMenuOnSelect={false}
+                          menuIsOpen={menuIsOpen}
+                          onMenuOpen={() => setMenuIsOpen(true)}
+                          onMenuClose={() => setMenuIsOpen(false)}
+                        />
                       );
                     }}
                   />
