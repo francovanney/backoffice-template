@@ -23,6 +23,7 @@ import {
 import Filter from "@/components/Filter";
 import toast from "react-hot-toast";
 import ConfirmationModal from "@/components/ConfirmationModal";
+import Spinner from "@/components/ui/Spinner";
 
 import { useShowsQuery } from "@/services/useShowsQuery";
 import { IShow } from "@/services/interfaces/IShow";
@@ -194,6 +195,7 @@ const TableUI = () => {
                     size="icon"
                     variant="ghost"
                     aria-label="Eliminar"
+                    disabled={deleteShowMutation.isPending}
                     onClick={() => {
                       openModal(
                         <ConfirmationModal
@@ -217,6 +219,7 @@ const TableUI = () => {
                             });
                           }}
                           onCancel={close}
+                          isLoading={deleteShowMutation.isPending}
                         >
                           <div className="py-2 text-center text-sm text-gray-700">
                             {show.title}

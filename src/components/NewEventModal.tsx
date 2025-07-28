@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form-input";
 import { FileUploader } from "react-drag-drop-files";
 import { X } from "lucide-react";
+import Spinner from "@/components/ui/Spinner";
 
 import { Event } from "@/types/event";
 
@@ -22,12 +23,14 @@ interface NewEventModalProps {
 
 export default function NewEventModal({ event }: NewEventModalProps) {
   const { close } = useModal();
-  const fileTypes = ["JPG", "JPEG"];
+  const fileTypes = ["JPG", "JPEG", "PNG"];
   const [file, setFile] = useState<File | null>(null);
   const [menuIsOpen, setMenuIsOpen] = useState(false);
   const {
     register,
     handleSubmit,
+    setError,
+    clearErrors,
     formState: { errors },
     control,
   } = useForm({
@@ -42,6 +45,7 @@ export default function NewEventModal({ event }: NewEventModalProps) {
           instagram: event.instagram || "",
           web: event.web || "",
           url: event.url || "",
+          image_url: event.image_url || "",
         }
       : {},
   });
@@ -55,8 +59,14 @@ export default function NewEventModal({ event }: NewEventModalProps) {
       toast.error(
         "El archivo es demasiado grande. El tamaño máximo permitido es 1MB."
       );
+      setError("image_url", {
+        type: "manual",
+        message: "El archivo es demasiado grande",
+      });
+      setFile(null);
     } else {
       setFile(singleFile);
+      clearErrors("image_url");
       toast.success("Imagen cargada correctamente");
     }
   };
@@ -77,6 +87,14 @@ export default function NewEventModal({ event }: NewEventModalProps) {
   const { refetch } = useShowsQuery();
 
   const onSubmit = (data: EventFormData) => {
+    if (!file && !event?.image_url) {
+      setError("image_url", {
+        type: "manual",
+        message: "La imagen es obligatoria",
+      });
+      return;
+    }
+
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("event_date", data.event_date);
@@ -119,17 +137,21 @@ export default function NewEventModal({ event }: NewEventModalProps) {
           className="absolute top-0 right-0 h-full w-full max-w-md bg-background shadow-lg z-50 transition-transform duration-300 pointer-events-auto translate-x-0"
           style={{ zIndex: 2 }}
         >
-          <div className="flex flex-col h-full overflow-y-auto">
+          {/* Línea vertical en el borde izquierdo */}
+          <div
+            className="absolute left-0 top-0 h-full w-[0.5px] bg-gray-200 rounded-r"
+            style={{ zIndex: 3 }}
+          />
+          <div className="flex flex-col h-full overflow-y-auto relative">
             <div className="bg-background px-6 py-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold">
-                {event ? "Editar evento" : "Nuevo evento"}
-              </h2>
+              <h2 className="text-lg font-bold">Nuevo Evento</h2>
               <X
                 className="ml-4 font-bold cursor-pointer"
                 onClick={close}
                 aria-label="Cerrar"
               />
             </div>
+            <hr className=" border-t border-gray-200" />
             <div className="p-6 pt-4">
               <form
                 className="space-y-4"
@@ -222,7 +244,7 @@ export default function NewEventModal({ event }: NewEventModalProps) {
                   span="https://instagram.com/"
                 />
                 <FormInput label="Web" type="text" register={register("web")} />
-                <FormInput label="Imagen">
+                <FormInput label="Imagen" error={errors.image_url?.message}>
                   <div className="space-y-3">
                     <FileUploader
                       handleChange={handleChange}
@@ -266,8 +288,20 @@ export default function NewEventModal({ event }: NewEventModalProps) {
                   register={register("url")}
                 />
                 <div className="flex justify-end pt-2">
-                  <Button className="w-full mt-2" type="submit">
-                    Agregar
+                  <Button
+                    className="w-full mt-2"
+                    type="submit"
+                    disabled={createShowMutation.isPending}
+                  >
+                    {createShowMutation.isPending ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="flex">
+                          <Spinner />
+                        </span>
+                      </div>
+                    ) : (
+                      "Agregar"
+                    )}
                   </Button>
                 </div>
               </form>

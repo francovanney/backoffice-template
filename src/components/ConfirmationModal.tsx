@@ -3,6 +3,8 @@ import { Dialog, DialogContent, DialogHeader, DialogFooter } from "./ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 
+import Spinner from "@/components/ui/Spinner";
+
 interface ConfirmationModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -12,6 +14,7 @@ interface ConfirmationModalProps {
   onConfirm: () => void;
   onCancel?: () => void;
   children?: ReactNode;
+  isLoading?: boolean;
 }
 
 export default function ConfirmationModal({
@@ -23,6 +26,7 @@ export default function ConfirmationModal({
   onConfirm,
   onCancel,
   children,
+  isLoading = false,
 }: ConfirmationModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -46,6 +50,7 @@ export default function ConfirmationModal({
           <Button
             variant="outline"
             type="button"
+            disabled={isLoading}
             onClick={() => {
               onCancel?.();
               onOpenChange(false);
@@ -56,12 +61,20 @@ export default function ConfirmationModal({
           <Button
             variant="destructive"
             type="button"
+            disabled={isLoading}
             onClick={() => {
               onConfirm();
               onOpenChange(false);
             }}
           >
-            {confirmLabel}
+            {isLoading ? (
+              <span className="flex items-center gap-2">
+                <Spinner size={18} />
+                Eliminando...
+              </span>
+            ) : (
+              confirmLabel
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

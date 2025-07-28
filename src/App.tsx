@@ -18,7 +18,6 @@ const App = () => {
 
   const sendTokenToBackend = async (firebaseUser) => {
     try {
-      console.log("🔐 Enviando token al backend...");
       const idToken = await firebaseUser.getIdToken();
       const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
@@ -29,15 +28,12 @@ const App = () => {
       });
 
       if (!response.ok) {
-        const error = await response.text();
-        console.error("Error en login backend:", error);
         return;
       }
 
       const data = await response.json();
       localStorage.setItem("accessToken", data.token);
     } catch (err: any) {
-      console.error("Error enviando token a backend:", err);
       if (err && err.code) {
         console.error(
           "Firebase error code:",

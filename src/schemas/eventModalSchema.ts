@@ -4,7 +4,7 @@ export const eventModalSchema = yup.object().shape({
   title: yup
     .string()
     .required("Evento es un campo obligatorio")
-    .max(50, "Máximo 50 caracteres"),
+    .max(30, "Máximo 30 caracteres"),
   categories: yup
     .array()
     .of(yup.string())
@@ -16,4 +16,5 @@ export const eventModalSchema = yup.object().shape({
   instagram: yup.string().optional(),
   web: yup.string().optional(),
   url: yup.string().optional(),
+  image_url: yup.string().optional(),
 });
