@@ -21,13 +21,17 @@ import {
 } from "@/components/ui/icons";
 
 import Filter from "@/components/Filter";
+import toast from "react-hot-toast";
+import ConfirmationModal from "@/components/ConfirmationModal";
 
 import { useShowsQuery } from "@/services/useShowsQuery";
 import { IShow } from "@/services/interfaces/IShow";
+import { useDeleteShowMutation } from "@/services/useDeleteShowMutation";
 
 const TableUI = () => {
-  const { data: shows, isLoading, isError } = useShowsQuery();
-  const { openModal } = useModal();
+  const { data: shows, isLoading, isError, refetch } = useShowsQuery();
+  const { openModal, close } = useModal();
+  const deleteShowMutation = useDeleteShowMutation();
 
   const SkeletonTableRows = () => {
     return (
@@ -186,7 +190,41 @@ const TableUI = () => {
                   >
                     <EditIcon className="text-primary" />
                   </Button>
-                  <Button size="icon" variant="ghost" aria-label="Eliminar">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    aria-label="Eliminar"
+                    onClick={() => {
+                      openModal(
+                        <ConfirmationModal
+                          open={true}
+                          onOpenChange={(open: boolean) => !open && close()}
+                          title="¿Desea eliminar este evento?"
+                          confirmLabel="Eliminar"
+                          cancelLabel="Cancelar"
+                          onConfirm={() => {
+                            deleteShowMutation.mutate(show.show_id, {
+                              onSuccess: () => {
+                                toast.success("Show eliminado correctamente");
+                                refetch();
+                              },
+                              onError: () => {
+                                toast.error("Error al eliminar el show");
+                              },
+                              onSettled: () => {
+                                close();
+                              },
+                            });
+                          }}
+                          onCancel={close}
+                        >
+                          <div className="py-2 text-center text-sm text-gray-700">
+                            {show.title}
+                          </div>
+                        </ConfirmationModal>
+                      );
+                    }}
+                  >
                     <DeleteIcon className="text-destructive" />
                   </Button>
                 </TableCell>

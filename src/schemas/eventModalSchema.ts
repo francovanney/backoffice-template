@@ -11,6 +11,7 @@ export const eventModalSchema = yup.object().shape({
     .required("Categoría es un campo obligatorio"),
   event_date: yup.string().required("Fecha es un campo obligatorio"),
   venue: yup.string().required("Venue es un campo obligatorio"),
+  city: yup.string().optional(),
   address: yup.string().optional(),
   instagram: yup.string().optional(),
   web: yup.string().optional(),

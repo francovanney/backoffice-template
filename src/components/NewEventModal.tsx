@@ -5,7 +5,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 
 import { eventModalSchema } from "@/schemas/eventModalSchema";
 import { useModal } from "@/hooks/useModal";
-import { useShowMutation } from "@/services/useShowMutation";
+import { useCreateShowMutation } from "@/services/useCreateShowMutation";
+import { useShowsQuery } from "@/services/useShowsQuery";
 
 import { Button } from "@/components/ui/button";
 import { Select, SelectItem } from "@/components/ui/select";
@@ -36,7 +37,7 @@ export default function NewEventModal({ event }: NewEventModalProps) {
           categories: event.categories,
           event_date: event.event_date ? event.event_date.split("T")[0] : "",
           venue: event.venue,
-          address: event.address || "",
+          city: event.city || "",
           instagram: event.instagram || "",
           web: event.web || "",
           url: event.url || "",
@@ -64,31 +65,38 @@ export default function NewEventModal({ event }: NewEventModalProps) {
     categories: (string | undefined)[];
     event_date: string;
     venue: string;
+    city?: string;
     address?: string;
     instagram?: string;
     web?: string;
     url?: string;
   };
 
-  const showMutation = useShowMutation();
+  const createShowMutation = useCreateShowMutation();
+  const { refetch } = useShowsQuery();
 
   const onSubmit = (data: EventFormData) => {
     const formData = new FormData();
     formData.append("title", data.title);
     formData.append("event_date", data.event_date);
     formData.append("venue", data.venue);
+    if (data.city) formData.append("city", data.city);
     if (data.address) formData.append("address", data.address);
     if (data.instagram) formData.append("instagram", data.instagram);
     if (data.web) formData.append("web", data.web);
     if (data.url) formData.append("url", data.url);
-    data.categories.filter(Boolean).forEach((cat) => {
-      if (cat) formData.append("categories", cat);
-    });
-    if (file) formData.append("image", file);
+    if (data.categories && data.categories.length > 0) {
+      formData.append(
+        "categories",
+        JSON.stringify(data.categories.filter(Boolean))
+      );
+    }
+    if (file) formData.append("flyer", file);
 
-    showMutation.mutate(formData, {
+    createShowMutation.mutate(formData, {
       onSuccess: () => {
         toast.success("Evento creado correctamente");
+        refetch();
         close();
       },
       onError: () => {
@@ -173,8 +181,14 @@ export default function NewEventModal({ event }: NewEventModalProps) {
                   error={errors.venue?.message}
                 />
                 <FormInput
+                  label="Ciudad"
+                  type="text"
+                  register={register("city")}
+                />
+                <FormInput
                   label="Dirección"
                   type="text"
+                  placeholder="Dirección"
                   register={register("address")}
                 />
                 <FormInput
@@ -230,7 +244,7 @@ export default function NewEventModal({ event }: NewEventModalProps) {
                 />
                 <div className="flex justify-end pt-2">
                   <Button className="w-full mt-2" type="submit">
-                    {event ? "Actualizar" : "Agregar"}
+                    Agregar
                   </Button>
                 </div>
               </form>

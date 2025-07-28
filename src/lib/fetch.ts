@@ -1,14 +1,14 @@
-const token = import.meta.env.VITE_TOKEN_SECRET;
-
 async function fetchWithAuth(
   url: string,
   method: string = "GET",
   body: Record<string, unknown> | FormData | null = null
 ) {
   const isFormData = body instanceof FormData;
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${token}`,
-  };
+  const token = localStorage.getItem("accessToken");
+  const headers: Record<string, string> = {};
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
   if (!isFormData) {
     headers["Content-Type"] = "application/json";
   }
