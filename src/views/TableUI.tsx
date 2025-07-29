@@ -1,5 +1,5 @@
 import { useModal } from "@/hooks/useModal";
-import EventEditModal from "@/components/EventEditModal";
+import EditEventModal from "@/components/EditEventModal";
 import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
@@ -20,14 +20,18 @@ import {
   DeleteIcon,
 } from "@/components/ui/icons";
 
-import Filter from "@/components/filter";
+import Filter from "@/components/Filter";
+import toast from "react-hot-toast";
+import ConfirmationModal from "@/components/ConfirmationModal";
 
 import { useShowsQuery } from "@/services/useShowsQuery";
-import { IShow } from "@/services/interfaces/IShow";
+import { Event } from "@/services/types/event";
+import { useDeleteShowMutation } from "@/services/useDeleteShowMutation";
 
 const TableUI = () => {
-  const { data: shows, isLoading, isError } = useShowsQuery();
-  const { openModal } = useModal();
+  const { data: shows, isLoading, isError, refetch } = useShowsQuery();
+  const { openModal, close } = useModal();
+  const deleteShowMutation = useDeleteShowMutation();
 
   const SkeletonTableRows = () => {
     return (
@@ -129,11 +133,11 @@ const TableUI = () => {
             </TableRow>
           )}
           {Array.isArray(shows) &&
-            shows.map((show: IShow) => (
+            shows.map((show: Event) => (
               <TableRow key={show.show_id}>
                 <TableCell>
                   <img
-                    src={show.image_url}
+                    src={show.image_url || ""}
                     alt={show.title}
                     className="w-10 h-10 rounded-full object-cover border"
                   />
@@ -141,7 +145,7 @@ const TableUI = () => {
                 <TableCell className="font-medium">{show.title}</TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
-                    {show.categories?.map((cat, idx) => (
+                    {show.categories?.map((cat: string, idx: number) => (
                       <Badge key={cat + idx} variant="secondary">
                         {cat}
                       </Badge>
@@ -182,11 +186,47 @@ const TableUI = () => {
                     size="icon"
                     variant="ghost"
                     aria-label="Editar"
-                    onClick={() => openModal(<EventEditModal show={show} />)}
+                    onClick={() => openModal(<EditEventModal show={show} />)}
                   >
                     <EditIcon className="text-primary" />
                   </Button>
-                  <Button size="icon" variant="ghost" aria-label="Eliminar">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    aria-label="Eliminar"
+                    disabled={deleteShowMutation.isPending}
+                    onClick={() => {
+                      openModal(
+                        <ConfirmationModal
+                          open={true}
+                          onOpenChange={(open: boolean) => !open && close()}
+                          title="¿Desea eliminar este evento?"
+                          confirmLabel="Eliminar"
+                          cancelLabel="Cancelar"
+                          onConfirm={() => {
+                            deleteShowMutation.mutate(show.show_id, {
+                              onSuccess: () => {
+                                toast.success("Evento eliminado correctamente");
+                                refetch();
+                              },
+                              onError: () => {
+                                toast.error("Error al eliminar el evento");
+                              },
+                              onSettled: () => {
+                                close();
+                              },
+                            });
+                          }}
+                          onCancel={close}
+                          isLoading={deleteShowMutation.isPending}
+                        >
+                          <div className="py-2 text-center text-sm text-gray-700">
+                            {show.title}
+                          </div>
+                        </ConfirmationModal>
+                      );
+                    }}
+                  >
                     <DeleteIcon className="text-destructive" />
                   </Button>
                 </TableCell>
