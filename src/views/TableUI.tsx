@@ -1,5 +1,5 @@
 import { useModal } from "@/hooks/useModal";
-import EventEditModal from "@/components/EventEditModal";
+import EditEventModal from "@/components/EditEventModal";
 import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
@@ -23,10 +23,9 @@ import {
 import Filter from "@/components/Filter";
 import toast from "react-hot-toast";
 import ConfirmationModal from "@/components/ConfirmationModal";
-import Spinner from "@/components/ui/Spinner";
 
 import { useShowsQuery } from "@/services/useShowsQuery";
-import { IShow } from "@/services/interfaces/IShow";
+import { Event } from "@/services/types/event";
 import { useDeleteShowMutation } from "@/services/useDeleteShowMutation";
 
 const TableUI = () => {
@@ -134,11 +133,11 @@ const TableUI = () => {
             </TableRow>
           )}
           {Array.isArray(shows) &&
-            shows.map((show: IShow) => (
+            shows.map((show: Event) => (
               <TableRow key={show.show_id}>
                 <TableCell>
                   <img
-                    src={show.image_url}
+                    src={show.image_url || ""}
                     alt={show.title}
                     className="w-10 h-10 rounded-full object-cover border"
                   />
@@ -146,7 +145,7 @@ const TableUI = () => {
                 <TableCell className="font-medium">{show.title}</TableCell>
                 <TableCell>
                   <div className="flex flex-wrap gap-1">
-                    {show.categories?.map((cat, idx) => (
+                    {show.categories?.map((cat: string, idx: number) => (
                       <Badge key={cat + idx} variant="secondary">
                         {cat}
                       </Badge>
@@ -187,7 +186,7 @@ const TableUI = () => {
                     size="icon"
                     variant="ghost"
                     aria-label="Editar"
-                    onClick={() => openModal(<EventEditModal show={show} />)}
+                    onClick={() => openModal(<EditEventModal show={show} />)}
                   >
                     <EditIcon className="text-primary" />
                   </Button>
@@ -207,11 +206,11 @@ const TableUI = () => {
                           onConfirm={() => {
                             deleteShowMutation.mutate(show.show_id, {
                               onSuccess: () => {
-                                toast.success("Show eliminado correctamente");
+                                toast.success("Evento eliminado correctamente");
                                 refetch();
                               },
                               onError: () => {
-                                toast.error("Error al eliminar el show");
+                                toast.error("Error al eliminar el evento");
                               },
                               onSettled: () => {
                                 close();
