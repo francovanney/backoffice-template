@@ -104,9 +104,7 @@ const Login = () => {
             >
               {loginMutation.isPending ? (
                 <div className="flex items-center justify-center gap-2">
-                  <span className="flex">
-                    <Spinner />
-                  </span>
+                  <Spinner />
                 </div>
               ) : (
                 "Iniciar sesión"
