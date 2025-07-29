@@ -46,7 +46,7 @@ const Login = () => {
       <div className="flex flex-col md:flex-row w-full max-w-4xl shadow-lg rounded-xl overflow-hidden bg-white">
         <div className="w-full md:w-1/2 bg-gray-100 flex items-center justify-center p-6">
           <img
-            className="max-w-full h-auto object-cover"
+            className="max-w-full h-auto object-contain"
             src={unplanLogo}
             alt="UnPlanLogo"
             aria-label="Logo de Un Plan"
