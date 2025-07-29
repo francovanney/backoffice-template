@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useModal } from "@/hooks/useModal";
 import EditEventModal from "@/components/EditEventModal";
 import { format } from "date-fns";
@@ -27,9 +28,17 @@ import ConfirmationModal from "@/components/ConfirmationModal";
 import { useShowsQuery } from "@/services/useShowsQuery";
 import { Event } from "@/services/types/event";
 import { useDeleteShowMutation } from "@/services/useDeleteShowMutation";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 
 const TableUI = () => {
-  const { data: shows, isLoading, isError, refetch } = useShowsQuery();
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebouncedValue(search, 600);
+  const {
+    data: shows,
+    isLoading,
+    isError,
+    refetch,
+  } = useShowsQuery(debouncedSearch);
   const { openModal, close } = useModal();
   const deleteShowMutation = useDeleteShowMutation();
 
@@ -75,7 +84,7 @@ const TableUI = () => {
   if (isLoading) {
     return (
       <div className="w-full">
-        <Filter />
+        <Filter search={search} setSearch={setSearch} />
         <Table>
           <TableCaption>Lista de shows.</TableCaption>
           <TableHeader>
@@ -101,7 +110,7 @@ const TableUI = () => {
 
   return (
     <div className="w-full">
-      <Filter />
+      <Filter search={search} setSearch={setSearch} />
       <Table>
         <TableCaption>Lista de shows.</TableCaption>
         <TableHeader>
