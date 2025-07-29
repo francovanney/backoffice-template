@@ -12,7 +12,8 @@ import Spinner from "./ui/Spinner";
 
 import { useModal } from "@/hooks/useModal";
 import { useUpdateShowMutation } from "@/services/useUpdateShowMutation";
-import { useShowsQuery } from "@/services/useShowsQuery";
+import { useQueryClient } from "@tanstack/react-query";
+import { SHOWS_KEY } from "@/const/queryKeys";
 
 import { EditEventModalSchema } from "@/schemas/eventEditModalSchema";
 import { Event } from "@/services/types/event";
@@ -98,7 +99,7 @@ export default function EditEventModal({ show }: EditEventModalProps) {
   };
 
   const updateShowMutation = useUpdateShowMutation();
-  const { refetch } = useShowsQuery();
+  const queryClient = useQueryClient();
 
   const onSubmit = (data: EventFormData) => {
     const formData = new FormData();
@@ -123,7 +124,7 @@ export default function EditEventModal({ show }: EditEventModalProps) {
       {
         onSuccess: () => {
           toast.success("Evento editado correctamente");
-          refetch();
+          queryClient.invalidateQueries({ queryKey: [SHOWS_KEY] });
           close();
         },
         onError: () => {

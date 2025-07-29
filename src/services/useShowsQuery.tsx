@@ -8,11 +8,14 @@ interface IPaginatedShows {
   data: Event[];
 }
 
-export function useShowsQuery() {
+export function useShowsQuery(search?: string | null) {
   return useQuery<Event[]>({
-    queryKey: [SHOWS_KEY],
+    queryKey: [SHOWS_KEY, search],
     queryFn: async () => {
-      const res: Event[] | IPaginatedShows = await fetchGet(API_SHOWS_URL);
+      const searchParam = search ? `?search=${encodeURIComponent(search)}` : "";
+      const res: Event[] | IPaginatedShows = await fetchGet(
+        `${API_SHOWS_URL}${searchParam}`
+      );
       if (Array.isArray(res)) return res;
       if (res && Array.isArray(res.data)) return res.data;
       return [];

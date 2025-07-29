@@ -12,7 +12,8 @@ import Spinner from "@/components/ui/Spinner";
 
 import { useModal } from "@/hooks/useModal";
 import { useCreateShowMutation } from "@/services/useCreateShowMutation";
-import { useShowsQuery } from "@/services/useShowsQuery";
+import { useQueryClient } from "@tanstack/react-query";
+import { SHOWS_KEY } from "@/const/queryKeys";
 
 import { eventModalSchema } from "@/schemas/eventModalSchema";
 import { Event } from "@/services/types/event";
@@ -84,7 +85,7 @@ export default function NewEventModal({ event }: NewEventModalProps) {
   };
 
   const createShowMutation = useCreateShowMutation();
-  const { refetch } = useShowsQuery();
+  const queryClient = useQueryClient();
 
   const onSubmit = (data: EventFormData) => {
     if (!file && !event?.image_url) {
@@ -115,7 +116,7 @@ export default function NewEventModal({ event }: NewEventModalProps) {
     createShowMutation.mutate(formData, {
       onSuccess: () => {
         toast.success("Evento creado correctamente");
-        refetch();
+        queryClient.invalidateQueries({ queryKey: [SHOWS_KEY] });
         close();
       },
       onError: () => {
@@ -137,7 +138,6 @@ export default function NewEventModal({ event }: NewEventModalProps) {
           className="absolute top-0 right-0 h-full w-full max-w-md bg-background shadow-lg z-50 transition-transform duration-300 pointer-events-auto translate-x-0"
           style={{ zIndex: 2 }}
         >
-          {/* Línea vertical en el borde izquierdo */}
           <div
             className="absolute left-0 top-0 h-full w-[0.5px] bg-gray-200 rounded-r"
             style={{ zIndex: 3 }}

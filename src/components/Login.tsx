@@ -6,6 +6,7 @@ import { useMutation } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import unplanLogo from "../assets/unplan-logo.png";
 import { loginSchema } from "@/schemas/loginSchema";
+import Spinner from "./ui/Spinner";
 
 const auth = getAuth(app);
 
@@ -30,12 +31,8 @@ const Login = () => {
     onSuccess: () => {
       toast.success("Inicio de sesión exitoso");
     },
-    onError: (error: { message?: string }) => {
-      if (error?.message) {
-        toast.error(error.message);
-      } else {
-        toast.error("Credenciales inválidas");
-      }
+    onError: () => {
+      toast.error("Credenciales inválidas");
     },
   });
 
@@ -49,8 +46,7 @@ const Login = () => {
       <div className="flex flex-col md:flex-row w-full max-w-4xl shadow-lg rounded-xl overflow-hidden bg-white">
         <div className="w-full md:w-1/2 bg-gray-100 flex items-center justify-center p-6">
           <img
-            width={250}
-            className="mx-auto"
+            className="max-w-full h-auto object-cover"
             src={unplanLogo}
             alt="UnPlanLogo"
             aria-label="Logo de Un Plan"
@@ -106,7 +102,15 @@ const Login = () => {
               disabled={loginMutation.isPending}
               className="w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loginMutation.isPending ? "Iniciando..." : "Iniciar Sesión"}
+              {loginMutation.isPending ? (
+                <div className="flex items-center justify-center gap-2">
+                  <span className="flex">
+                    <Spinner />
+                  </span>
+                </div>
+              ) : (
+                "Iniciar sesión"
+              )}
             </button>
           </form>
         </div>
