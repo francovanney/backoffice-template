@@ -17,8 +17,8 @@ export default function Filter({ search, setSearch }: FilterProps) {
   };
 
   return (
-    <div className="flex gap-2 items-center mb-4 ">
-      <div className="relative w-64 mr-4 ml-4">
+    <div className="flex gap-2 items-center mb-4 mt-2 ">
+      <div className="relative w-64 ml-4">
         <FormInput
           type="text"
           placeholder="Buscar evento..."

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useModal } from "@/hooks/useModal";
 import EditEventModal from "@/components/EditEventModal";
 import { format } from "date-fns";
@@ -8,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -20,25 +18,21 @@ import {
   EditIcon,
   DeleteIcon,
 } from "@/components/ui/icons";
+import { Star } from "lucide-react";
 
-import Filter from "@/components/Filter";
 import toast from "react-hot-toast";
 import ConfirmationModal from "@/components/ConfirmationModal";
 
 import { useShowsQuery } from "@/services/useShowsQuery";
 import { Event } from "@/services/types/event";
 import { useDeleteShowMutation } from "@/services/useDeleteShowMutation";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 
-const TableUI = () => {
-  const [search, setSearch] = useState("");
-  const debouncedSearch = useDebouncedValue(search, 600);
-  const {
-    data: shows,
-    isLoading,
-    isError,
-    refetch,
-  } = useShowsQuery(debouncedSearch);
+interface TableUIProps {
+  search: string;
+}
+
+const TableUI = ({ search }: TableUIProps) => {
+  const { data: shows, isLoading, isError, refetch } = useShowsQuery(search);
   const { openModal, close } = useModal();
   const deleteShowMutation = useDeleteShowMutation();
 
@@ -83,166 +77,195 @@ const TableUI = () => {
 
   if (isLoading) {
     return (
-      <div className="w-full">
-        <Filter search={search} setSearch={setSearch} />
-        <Table>
-          <TableCaption>Lista de shows.</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Imagen</TableHead>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Categorías</TableHead>
-              <TableHead>Fecha</TableHead>
-              <TableHead>Venue</TableHead>
-              <TableHead>Dirección</TableHead>
-              <TableHead className="text-center">Instagram</TableHead>
-              <TableHead className="text-center">Web</TableHead>
-              <TableHead className="text-center">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            <SkeletonTableRows />
-          </TableBody>
-        </Table>
+      <div className="w-full h-full flex flex-col">
+        <div className="flex-shrink-0 bg-white border-b">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="bg-white">Imagen</TableHead>
+                <TableHead className="bg-white">Nombre</TableHead>
+                <TableHead className="bg-white">Categorías</TableHead>
+                <TableHead className="bg-white">Fecha</TableHead>
+                <TableHead className="bg-white">Venue</TableHead>
+                <TableHead className="bg-white">Dirección</TableHead>
+                <TableHead className="text-center bg-white">
+                  Instagram
+                </TableHead>
+                <TableHead className="text-center bg-white">Web</TableHead>
+                <TableHead className="text-center bg-white">Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+          </Table>
+        </div>
+
+        <div className="flex-1 overflow-auto">
+          <Table>
+            <TableBody>
+              <SkeletonTableRows />
+            </TableBody>
+          </Table>
+        </div>
+
+        <div className="flex-shrink-0 p-4 text-center text-sm text-muted-foreground">
+          Lista de shows.
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full">
-      <Filter search={search} setSearch={setSearch} />
-      <Table>
-        <TableCaption>Lista de shows.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Imagen</TableHead>
-            <TableHead>Evento</TableHead>
-            <TableHead>Categorías</TableHead>
-            <TableHead>Fecha</TableHead>
-            <TableHead>Venue</TableHead>
-            <TableHead>Dirección</TableHead>
-            <TableHead className="text-center">Instagram</TableHead>
-            <TableHead className="text-center">Web</TableHead>
-            <TableHead className="text-center">Acciones</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {isError && (
+    <div className="w-full h-full flex flex-col">
+      <div className="flex-shrink-0 bg-white border-b">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={9} className="text-center text-destructive">
-                Error al cargar los shows
-              </TableCell>
+              <TableHead className="bg-white">Imagen</TableHead>
+              <TableHead className="bg-white">Evento</TableHead>
+              <TableHead className="bg-white">Categorías</TableHead>
+              <TableHead className="bg-white">Fecha</TableHead>
+              <TableHead className="bg-white">Venue</TableHead>
+              <TableHead className="bg-white">Dirección</TableHead>
+              <TableHead className="text-center bg-white">Instagram</TableHead>
+              <TableHead className="text-center bg-white">Web</TableHead>
+              <TableHead className="text-center bg-white">Acciones</TableHead>
             </TableRow>
-          )}
-          {shows && shows.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={9} className="text-center">
-                No hay shows disponibles
-              </TableCell>
-            </TableRow>
-          )}
-          {Array.isArray(shows) &&
-            shows.map((show: Event) => (
-              <TableRow key={show.show_id}>
-                <TableCell>
-                  <img
-                    src={show.image_url || ""}
-                    alt={show.title}
-                    className="w-10 h-10 rounded-full object-cover border"
-                  />
-                </TableCell>
-                <TableCell className="font-medium">{show.title}</TableCell>
-                <TableCell>
-                  <div className="flex flex-wrap gap-1">
-                    {show.categories?.map((cat: string, idx: number) => (
-                      <Badge key={cat + idx} variant="secondary">
-                        {cat}
-                      </Badge>
-                    ))}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {show.event_date
-                    ? format(new Date(show.event_date), "dd/MM/yyyy")
-                    : ""}
-                </TableCell>
-                <TableCell>{show.venue}</TableCell>
-                <TableCell>{show.address}</TableCell>
-                <TableCell className="text-center">
-                  {show.instagram ? (
-                    <a
-                      href={`https://www.instagram.com/${show.instagram}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <InstagramIcon className="mx-auto text-pink-500 hover:scale-110 transition-transform" />
-                    </a>
-                  ) : null}
-                </TableCell>
-                <TableCell className="text-center">
-                  {show.web ? (
-                    <a
-                      href={show.web}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <WebIcon className="mx-auto text-blue-500 hover:scale-110 transition-transform" />
-                    </a>
-                  ) : null}
-                </TableCell>
-                <TableCell className="flex gap-2 justify-center">
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    aria-label="Editar"
-                    onClick={() => openModal(<EditEventModal show={show} />)}
-                  >
-                    <EditIcon className="text-primary" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    aria-label="Eliminar"
-                    disabled={deleteShowMutation.isPending}
-                    onClick={() => {
-                      openModal(
-                        <ConfirmationModal
-                          open={true}
-                          onOpenChange={(open: boolean) => !open && close()}
-                          title="¿Desea eliminar este evento?"
-                          confirmLabel="Eliminar"
-                          cancelLabel="Cancelar"
-                          onConfirm={() => {
-                            deleteShowMutation.mutate(show.show_id, {
-                              onSuccess: () => {
-                                toast.success("Evento eliminado correctamente");
-                                refetch();
-                              },
-                              onError: () => {
-                                toast.error("Error al eliminar el evento");
-                              },
-                              onSettled: () => {
-                                close();
-                              },
-                            });
-                          }}
-                          onCancel={close}
-                          isLoading={deleteShowMutation.isPending}
-                        >
-                          <div className="py-2 text-center text-sm text-gray-700">
-                            {show.title}
-                          </div>
-                        </ConfirmationModal>
-                      );
-                    }}
-                  >
-                    <DeleteIcon className="text-destructive" />
-                  </Button>
+          </TableHeader>
+        </Table>
+      </div>
+
+      <div className="flex-1 overflow-auto">
+        <Table>
+          <TableBody>
+            {isError && (
+              <TableRow>
+                <TableCell colSpan={9} className="text-center text-destructive">
+                  Error al cargar los shows
                 </TableCell>
               </TableRow>
-            ))}
-        </TableBody>
-      </Table>
+            )}
+            {shows && shows.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={9} className="text-center">
+                  No hay shows disponibles
+                </TableCell>
+              </TableRow>
+            )}
+            {Array.isArray(shows) &&
+              shows.map((show: Event) => (
+                <TableRow key={show.show_id}>
+                  <TableCell>
+                    <img
+                      src={show.image_url || ""}
+                      alt={show.title}
+                      className="w-10 h-10 rounded-full object-cover border"
+                    />
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2">
+                      {show.is_featured && (
+                        <Star className="h-4 w-4 text-yellow-500 fill-current" />
+                      )}
+                      <span>{show.title}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1">
+                      {show.categories?.map((cat: string, idx: number) => (
+                        <Badge key={cat + idx} variant="secondary">
+                          {cat}
+                        </Badge>
+                      ))}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {show.event_date
+                      ? format(new Date(show.event_date), "dd/MM/yyyy")
+                      : ""}
+                  </TableCell>
+                  <TableCell>{show.venue}</TableCell>
+                  <TableCell>{show.address}</TableCell>
+                  <TableCell className="text-center">
+                    {show.instagram ? (
+                      <a
+                        href={`https://www.instagram.com/${show.instagram}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <InstagramIcon className="mx-auto text-pink-500 hover:scale-110 transition-transform" />
+                      </a>
+                    ) : null}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {show.web ? (
+                      <a
+                        href={show.web}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <WebIcon className="mx-auto text-blue-500 hover:scale-110 transition-transform" />
+                      </a>
+                    ) : null}
+                  </TableCell>
+                  <TableCell className="flex gap-2 justify-center">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      aria-label="Editar"
+                      onClick={() => openModal(<EditEventModal show={show} />)}
+                    >
+                      <EditIcon className="text-primary" />
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      aria-label="Eliminar"
+                      disabled={deleteShowMutation.isPending}
+                      onClick={() => {
+                        openModal(
+                          <ConfirmationModal
+                            open={true}
+                            onOpenChange={(open: boolean) => !open && close()}
+                            title="¿Desea eliminar este evento?"
+                            confirmLabel="Eliminar"
+                            cancelLabel="Cancelar"
+                            onConfirm={() => {
+                              deleteShowMutation.mutate(show.show_id, {
+                                onSuccess: () => {
+                                  toast.success(
+                                    "Evento eliminado correctamente"
+                                  );
+                                  refetch();
+                                },
+                                onError: () => {
+                                  toast.error("Error al eliminar el evento");
+                                },
+                                onSettled: () => {
+                                  close();
+                                },
+                              });
+                            }}
+                            onCancel={close}
+                            isLoading={deleteShowMutation.isPending}
+                          >
+                            <div className="py-2 text-center text-sm text-gray-700">
+                              {show.title}
+                            </div>
+                          </ConfirmationModal>
+                        );
+                      }}
+                    >
+                      <DeleteIcon className="text-destructive" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="flex-shrink-0 p-4 text-center text-sm text-muted-foreground">
+        Lista de shows.
+      </div>
     </div>
   );
 };
