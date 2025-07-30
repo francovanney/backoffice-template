@@ -1,34 +1,76 @@
+import { refreshToken, getValidToken } from "./tokenManager";
+
 async function fetchWithAuth(
   url: string,
   method: string = "GET",
   body: Record<string, unknown> | FormData | null = null
 ) {
-  const isFormData = body instanceof FormData;
-  const token = localStorage.getItem("accessToken");
-  const headers: Record<string, string> = {};
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+  try {
+    let token = await getValidToken();
+
+    const isFormData = body instanceof FormData;
+    const headers: Record<string, string> = {};
+
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+    if (!isFormData) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    const config: RequestInit = {
+      method,
+      headers,
+    };
+
+    if (body) {
+      config.body = isFormData ? body : JSON.stringify(body);
+    }
+
+    const response = await fetch(url, config);
+
+    if (response.status === 401) {
+      console.log("Token expired, refreshing...");
+      const refreshed = await refreshToken();
+
+      if (refreshed) {
+        token = await getValidToken();
+
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+
+        const retryConfig: RequestInit = {
+          method,
+          headers,
+        };
+
+        if (body) {
+          retryConfig.body = isFormData ? body : JSON.stringify(body);
+        }
+
+        const retryResponse = await fetch(url, retryConfig);
+
+        if (retryResponse.ok) {
+          return await retryResponse.json();
+        }
+      }
+
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("user");
+      window.location.reload();
+      return;
+    }
+
+    if (!response.ok) {
+      throw await response.json();
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Fetch error:", error);
+    throw error;
   }
-  if (!isFormData) {
-    headers["Content-Type"] = "application/json";
-  }
-
-  const config: RequestInit = {
-    method,
-    headers,
-  };
-
-  if (body) {
-    config.body = isFormData ? body : JSON.stringify(body);
-  }
-
-  const response = await fetch(url, config);
-
-  if (!response.ok) {
-    throw await response.json();
-  }
-
-  return await response.json();
 }
 
 export function fetchGet(url: string) {

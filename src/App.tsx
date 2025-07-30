@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Toaster } from "react-hot-toast";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
@@ -23,36 +23,49 @@ const App = () => {
   const debouncedSearch = useDebouncedValue(search, 600);
   const API_URL = import.meta.env.VITE_SERVER_API;
 
-  const sendTokenToBackend = async (firebaseUser) => {
-    try {
-      const idToken = await firebaseUser.getIdToken();
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ idToken }),
-      });
+  const sendTokenToBackend = useCallback(
+    async (firebaseUser: User, forceRefresh = false) => {
+      try {
+        const idToken = await firebaseUser.getIdToken(forceRefresh);
+        const response = await fetch(`${API_URL}/auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ idToken }),
+        });
 
-      if (!response.ok) {
-        return;
-      }
+        if (!response.ok) {
+          console.error("Error refreshing token:", response.status);
+          return false;
+        }
 
-      const data = await response.json();
-      localStorage.setItem("accessToken", data.token);
-    } catch (err: any) {
-      if (err && err.code) {
-        console.error(
-          "Firebase error code:",
-          err.code,
-          "message:",
-          err.message
-        );
+        const data = await response.json();
+        localStorage.setItem("accessToken", data.token);
+        return true;
+      } catch (err: any) {
+        console.error("Error refreshing token:", err);
+        return false;
       }
-    }
-  };
+    },
+    [API_URL]
+  );
+
+  const setupTokenRefresh = useCallback(
+    (firebaseUser: User) => {
+      const refreshInterval = setInterval(async () => {
+        console.log("Refreshing token automatically...");
+        await sendTokenToBackend(firebaseUser, true);
+      }, 50 * 60 * 1000);
+
+      return refreshInterval;
+    },
+    [sendTokenToBackend]
+  );
 
   useEffect(() => {
+    let refreshInterval: NodeJS.Timeout;
+
     const unsubscribe = onAuthStateChanged(auth, async (userLogged) => {
       if (userLogged) {
         setUser(userLogged);
@@ -62,17 +75,28 @@ const App = () => {
         if (!hasToken) {
           await sendTokenToBackend(userLogged);
         }
+
+        refreshInterval = setupTokenRefresh(userLogged);
       } else {
         setUser(null);
         localStorage.removeItem("user");
         localStorage.removeItem("accessToken");
+
+        if (refreshInterval) {
+          clearInterval(refreshInterval);
+        }
       }
 
       setIsLoading(false);
     });
 
-    return () => unsubscribe();
-  }, []);
+    return () => {
+      unsubscribe();
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+    };
+  }, [sendTokenToBackend, setupTokenRefresh]);
 
   return (
     <Tooltip.Provider>
