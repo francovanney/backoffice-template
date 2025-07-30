@@ -15,6 +15,8 @@ interface ConfirmationModalProps {
   onCancel?: () => void;
   children?: ReactNode;
   isLoading?: boolean;
+  buttonsAlignment?: "start" | "center" | "end";
+  equalWidthButtons?: boolean;
 }
 
 export default function ConfirmationModal({
@@ -27,7 +29,22 @@ export default function ConfirmationModal({
   onCancel,
   children,
   isLoading = false,
+  buttonsAlignment = "end",
+  equalWidthButtons = false,
 }: ConfirmationModalProps) {
+  const getJustifyClass = () => {
+    switch (buttonsAlignment) {
+      case "start":
+        return "justify-start";
+      case "center":
+        return "justify-center";
+      case "end":
+      default:
+        return "justify-end";
+    }
+  };
+
+  const buttonWidthClass = equalWidthButtons ? "flex-1" : "";
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
@@ -46,11 +63,12 @@ export default function ConfirmationModal({
             </div>
           )}
         </div>
-        <DialogFooter className="flex gap-2 justify-end pt-4">
+        <DialogFooter className={`flex gap-2 pt-4 ${getJustifyClass()}`}>
           <Button
             variant="outline"
             type="button"
             disabled={isLoading}
+            className={buttonWidthClass}
             onClick={() => {
               onCancel?.();
               onOpenChange(false);
@@ -62,6 +80,7 @@ export default function ConfirmationModal({
             variant="destructive"
             type="button"
             disabled={isLoading}
+            className={buttonWidthClass}
             onClick={() => {
               onConfirm();
               onOpenChange(false);
