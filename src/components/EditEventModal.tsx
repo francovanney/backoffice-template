@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form-input";
+import { Checkbox } from "@/components/ui/checkbox";
 import Spinner from "./ui/Spinner";
 
 import { useModal } from "@/hooks/useModal";
@@ -41,6 +42,7 @@ export default function EditEventModal({ show }: EditEventModalProps) {
     web: show.web ?? undefined,
     url: show.url || undefined,
     image_url: show.image_url || "",
+    is_featured: show.is_featured || false,
   };
 
   const {
@@ -96,6 +98,7 @@ export default function EditEventModal({ show }: EditEventModalProps) {
     web?: string;
     url?: string;
     image_url?: string;
+    is_featured?: boolean;
   };
 
   const updateShowMutation = useUpdateShowMutation();
@@ -111,6 +114,8 @@ export default function EditEventModal({ show }: EditEventModalProps) {
     if (data.instagram) formData.append("instagram", data.instagram);
     if (data.web) formData.append("web", data.web);
     if (data.url) formData.append("url", data.url);
+    if (data.is_featured !== undefined)
+      formData.append("is_featured", String(data.is_featured));
     if (data.categories && data.categories.length > 0) {
       formData.append(
         "categories",
@@ -248,6 +253,32 @@ export default function EditEventModal({ show }: EditEventModalProps) {
                   span="https://instagram.com/"
                 />
                 <FormInput label="Web" type="text" register={register("web")} />
+
+                <div className="space-y-2">
+                  <label className="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Evento Destacado
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <Controller
+                      name="is_featured"
+                      control={control}
+                      render={({ field }) => (
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          id="is_featured"
+                        />
+                      )}
+                    />
+                    <label
+                      htmlFor="is_featured"
+                      className="text-sm font-medium cursor-pointer"
+                    >
+                      Marcar como evento destacado
+                    </label>
+                  </div>
+                </div>
+
                 <FormInput label="Imagen" error={errors.image_url?.message}>
                   <div className="space-y-3">
                     <FileUploader

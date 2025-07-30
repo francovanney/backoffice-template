@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form-input";
+import { Checkbox } from "@/components/ui/checkbox";
 import Spinner from "@/components/ui/Spinner";
 
 import { useModal } from "@/hooks/useModal";
@@ -47,8 +48,11 @@ export default function NewEventModal({ event }: NewEventModalProps) {
           web: event.web || "",
           url: event.url || "",
           image_url: event.image_url || "",
+          is_featured: event.is_featured || false,
         }
-      : {},
+      : {
+          is_featured: false,
+        },
   });
 
   const handleChange = (uploadedFile: File | File[]) => {
@@ -82,6 +86,7 @@ export default function NewEventModal({ event }: NewEventModalProps) {
     instagram?: string;
     web?: string;
     url?: string;
+    is_featured?: boolean;
   };
 
   const createShowMutation = useCreateShowMutation();
@@ -105,6 +110,8 @@ export default function NewEventModal({ event }: NewEventModalProps) {
     if (data.instagram) formData.append("instagram", data.instagram);
     if (data.web) formData.append("web", data.web);
     if (data.url) formData.append("url", data.url);
+    if (data.is_featured !== undefined)
+      formData.append("is_featured", String(data.is_featured));
     if (data.categories && data.categories.length > 0) {
       formData.append(
         "categories",
@@ -164,6 +171,7 @@ export default function NewEventModal({ event }: NewEventModalProps) {
                   register={register("title")}
                   error={errors.title?.message}
                 />
+
                 <FormInput
                   label="Categorías"
                   error={errors.categories?.message}
@@ -244,6 +252,32 @@ export default function NewEventModal({ event }: NewEventModalProps) {
                   span="https://instagram.com/"
                 />
                 <FormInput label="Web" type="text" register={register("web")} />
+
+                <div className="space-y-2">
+                  <label className="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Evento Destacado
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <Controller
+                      name="is_featured"
+                      control={control}
+                      render={({ field }) => (
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          id="is_featured"
+                        />
+                      )}
+                    />
+                    <label
+                      htmlFor="is_featured"
+                      className="text-sm font-medium cursor-pointer"
+                    >
+                      Marcar como evento destacado
+                    </label>
+                  </div>
+                </div>
+
                 <FormInput label="Imagen" error={errors.image_url?.message}>
                   <div className="space-y-3">
                     <FileUploader

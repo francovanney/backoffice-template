@@ -14,4 +14,5 @@ export const EditEventModalSchema = yup.object().shape({
   web: yup.string().optional(),
   url: yup.string().optional(),
   image_url: yup.string().optional(),
+  is_featured: yup.boolean().optional().default(false),
 });
