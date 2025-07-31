@@ -33,7 +33,7 @@ export default function Filter({ search, setSearch }: FilterProps) {
             onClick={clearSearch}
             className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
             type="button"
-            aria-label="Limpiar búsqueda"
+            aria-label="Limpiar busqueda"
           >
             <X size={16} />
           </button>
