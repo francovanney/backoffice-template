@@ -9,7 +9,7 @@ interface FilterProps {
   setSearch: (search: string) => void;
 }
 
-export default function Filter({ search, setSearch }: FilterProps) {
+const Filter = ({ search, setSearch }: FilterProps) => {
   const { openModal } = useModal();
 
   const clearSearch = () => {
@@ -49,4 +49,6 @@ export default function Filter({ search, setSearch }: FilterProps) {
       </Button>
     </div>
   );
-}
+};
+
+export default Filter;
