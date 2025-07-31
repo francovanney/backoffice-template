@@ -21,7 +21,13 @@ jobs:
           echo VITE_SERVER_API=https://api.pampacode.com > .env.production
 
       - name: 🛠 Generando build (carpeta dist/)
-        run: npm run build
+        run: |
+          # Verificar nombres de archivos
+          find src -type f -name "*.tsx" -o -name "*.ts" | sort
+          # Corregir importación en App.tsx
+          sed -i 's/import Filter from ".\/components\/Filter";/import Filter from ".\/components\/filter";/g' src/App.tsx
+          # Intentar build
+          npm run build
 
       - name: 📤 Subir carpeta dist/ por FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
