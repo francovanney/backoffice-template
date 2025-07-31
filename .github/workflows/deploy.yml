@@ -1,0 +1,33 @@
+name: 🚀🚀 Deployando 🚀🚀
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Clonando repo
+        uses: actions/checkout@v3
+
+      - name: ⚙️ Instalando dependencias
+        run: npm install
+
+      - name: 📝 Creando .env.production
+        run: |
+          echo VITE_SERVER_API=https://api.pampacode.com > .env.production
+
+      - name: 🛠 Generando build (carpeta dist/)
+        run: npm run build
+
+      - name: 📤 Subir carpeta dist/ por FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ftp.unplanenjunin.com.ar
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /public_html/backoffice/
+          local-dir: dist/
