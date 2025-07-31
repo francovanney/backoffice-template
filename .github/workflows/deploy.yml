@@ -28,6 +28,14 @@ jobs:
           echo VITE_FIREBASE_APP_ID=${{ secrets.FIREBASE_APP_ID }} >> .env.production
           echo VITE_FIREBASE_MEASUREMENT_ID=${{ secrets.FIREBASE_MEASUREMENT_ID }} >> .env.production
 
+      - name: 🔍 Verificar variables de entorno
+        run: |
+          echo "=== Verificando contenido de .env.production ==="
+          cat .env.production
+          echo "=== Verificando que las variables no estén vacías ==="
+          if [ -z "${{ secrets.FIREBASE_API_KEY }}" ]; then echo "❌ FIREBASE_API_KEY está vacío"; else echo "✅ FIREBASE_API_KEY tiene valor"; fi
+          if [ -z "${{ secrets.FIREBASE_PROJECT_ID }}" ]; then echo "❌ FIREBASE_PROJECT_ID está vacío"; else echo "✅ FIREBASE_PROJECT_ID tiene valor"; fi
+
       - name: 🛠 Generando build (carpeta dist/)
         run: |
           # Verificar nombres de archivos
