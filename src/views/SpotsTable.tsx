@@ -1,7 +1,8 @@
 import { useModal } from "@/hooks/useModal";
 import { usePagination } from "@/hooks/usePagination";
 import { useState, useEffect } from "react";
-import { dummySpots, type Spot } from "@/const/dummydata";
+import { useSpotsQuery } from "@/services/useSpotsQuery";
+import { type Spot } from "@/services/types/spot";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -46,22 +47,35 @@ const SpotsTable = ({
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 15;
 
-  // TODO: Reemplazar con el servicio real de spots
-  const isLoading = false;
-  const isError = false;
+  // Usar el servicio real de spots
+  const {
+    data: allSpots,
+    isLoading,
+    error: isError,
+  } = useSpotsQuery(seccionPadre || "");
 
-  // Datos importados desde dummydata.ts
-  const spots = dummySpots;
+  // Filtrar spots por seccion_id si se proporciona, sino usar todos los spots de la sección padre
+  const filteredSpots =
+    seccionId && allSpots
+      ? allSpots.filter((spot: Spot) => spot.seccion_id === seccionId)
+      : allSpots || [];
 
-  // Filtrar spots por seccion_id si se proporciona, sino por seccion_padre
-  const filteredSpots = seccionId
-    ? spots.filter((spot) => spot.seccion_id === seccionId)
-    : seccionPadre
-    ? spots.filter((spot) => spot.seccion_padre === seccionPadre)
-    : spots;
+  // Aplicar filtro de búsqueda si existe
+  const searchFilteredSpots = search
+    ? filteredSpots.filter(
+        (spot: Spot) =>
+          spot.nombre.toLowerCase().includes(search.toLowerCase()) ||
+          spot.direccion.toLowerCase().includes(search.toLowerCase())
+      )
+    : filteredSpots;
 
-  const totalPages = 1;
-  const total = filteredSpots.length;
+  const totalPages = Math.ceil(searchFilteredSpots.length / pageSize);
+  const total = searchFilteredSpots.length;
+
+  // Paginación local de los resultados filtrados
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedSpots = searchFilteredSpots.slice(startIndex, endIndex);
 
   const { openModal, close } = useModal();
 
@@ -217,16 +231,16 @@ const SpotsTable = ({
                 </TableCell>
               </TableRow>
             )}
-            {filteredSpots && filteredSpots.length === 0 && (
+            {paginatedSpots && paginatedSpots.length === 0 && !isLoading && (
               <TableRow>
                 <TableCell colSpan={7} className="text-center">
                   No hay spots disponibles
                 </TableCell>
               </TableRow>
             )}
-            {filteredSpots &&
-              filteredSpots.length > 0 &&
-              filteredSpots.map((spot: Spot) => (
+            {paginatedSpots &&
+              paginatedSpots.length > 0 &&
+              paginatedSpots.map((spot: Spot) => (
                 <TableRow key={spot.id}>
                   <TableCell className="text-center w-16">
                     <div className="w-10 h-10 rounded-full overflow-hidden border bg-gray-100 flex items-center justify-center flex-shrink-0 mx-auto">

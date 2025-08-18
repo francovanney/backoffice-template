@@ -1,4 +1,5 @@
 import { useGetSectionsQuery } from "@/services/useGetSectionsQuery";
+import { useSpotsQuery } from "@/services/useSpotsQuery";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -22,8 +23,7 @@ import { useModal } from "@/hooks/useModal";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import toast from "react-hot-toast";
-
-const SECTION_TYPES = ["salir", "comer", "dormir", "actividades", "comercios"];
+import { SECTION_TYPES } from "@/const/sectionsTypes";
 
 const SectionTypeCard = ({
   sectionType,
@@ -108,9 +108,16 @@ const Spots = () => {
     error,
   } = useGetSectionsQuery(selectedSectionType || "");
 
+  const { data: allSpots } = useSpotsQuery(selectedSectionType || "");
+
+  const getSpotCountForSection = (sectionId: number) => {
+    if (!allSpots) return 0;
+    return allSpots.filter((spot) => spot.seccion_id === sectionId).length;
+  };
+
   const handleSectionTypeClick = (sectionType: string) => {
     setSelectedSectionType(sectionType);
-    setOpenSubsections(new Set()); // Reset open subsections when changing section type
+    setOpenSubsections(new Set());
   };
 
   const toggleSubsection = (subsectionId: number) => {
@@ -167,6 +174,13 @@ const Spots = () => {
       seccion_padre: section.seccion_padre || selectedSectionType!,
     });
     setIsEditSectionModalOpen(true);
+  };
+
+  const handleAddSpot = (section: { id: number; nombre: string }) => {
+    console.log("Agregar spot para la sección:", section);
+    toast.success(
+      `Funcionalidad para agregar spot en ${section.nombre} próximamente`
+    );
   };
 
   if (!selectedSectionType) {
@@ -281,52 +295,75 @@ const Spots = () => {
                 <h2 className="text-xl font-semibold text-gray-900">
                   {seccion.nombre}{" "}
                   <span className="text-sm text-gray-500 font-normal">
-                    (ID: {seccion.id})
+                    (ID: {seccion.id} • {getSpotCountForSection(seccion.id)}{" "}
+                    spots)
                   </span>
                 </h2>
               </button>
-              <div className="flex gap-1">
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => handleEditSection(seccion)}
-                      className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
-                      aria-label="Editar sección"
+              {openSubsections.has(seccion.id) && (
+                <div className="flex gap-1">
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => handleAddSpot(seccion)}
+                        className="text-green-500 hover:text-green-700 hover:bg-green-50"
+                        aria-label="Agregar spot"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                      side="bottom"
+                      sideOffset={8}
+                      className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg"
                     >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  </Tooltip.Trigger>
-                  <Tooltip.Content
-                    side="bottom"
-                    sideOffset={8}
-                    className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg"
-                  >
-                    Editar sección
-                  </Tooltip.Content>
-                </Tooltip.Root>
-                <Tooltip.Root>
-                  <Tooltip.Trigger asChild>
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      onClick={() => handleDeleteSection(seccion)}
-                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                      aria-label="Eliminar sección"
+                      Agregar spot
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => handleEditSection(seccion)}
+                        className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+                        aria-label="Editar sección"
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                      side="bottom"
+                      sideOffset={8}
+                      className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg"
                     >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </Tooltip.Trigger>
-                  <Tooltip.Content
-                    side="bottom"
-                    sideOffset={8}
-                    className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg"
-                  >
-                    Eliminar sección
-                  </Tooltip.Content>
-                </Tooltip.Root>
-              </div>
+                      Editar sección
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                  <Tooltip.Root>
+                    <Tooltip.Trigger asChild>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => handleDeleteSection(seccion)}
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                        aria-label="Eliminar sección"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content
+                      side="bottom"
+                      sideOffset={8}
+                      className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg"
+                    >
+                      Eliminar sección
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                </div>
+              )}
             </div>
 
             {openSubsections.has(seccion.id) && (
