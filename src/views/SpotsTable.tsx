@@ -1,6 +1,7 @@
 import { useModal } from "@/hooks/useModal";
 import { usePagination } from "@/hooks/usePagination";
 import { useState, useEffect } from "react";
+import { dummySpots, type Spot } from "@/const/dummydata";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -31,33 +32,17 @@ import { Phone } from "lucide-react";
 import toast from "react-hot-toast";
 import ConfirmationModal from "@/components/ConfirmationModal";
 
-// Interfaz basada en la API real
-interface Spot {
-  id: number;
-  nombre: string;
-  direccion: string;
-  link_direccion: string;
-  telefono: string;
-  logo_url: string;
-  descripcion: string;
-  reservas: string;
-  menu: string;
-  delivery: string;
-  web: string;
-  is_featured: boolean;
-  instagram: string;
-  youtube: string;
-  seccion_id: number;
-  seccion_nombre: string;
-  seccion_padre: string;
-}
-
 interface SpotsTableProps {
   search?: string;
   seccionPadre?: string;
+  seccionId?: number | null;
 }
 
-const SpotsTable = ({ search = "", seccionPadre }: SpotsTableProps) => {
+const SpotsTable = ({
+  search = "",
+  seccionPadre,
+  seccionId,
+}: SpotsTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 15;
 
@@ -65,126 +50,13 @@ const SpotsTable = ({ search = "", seccionPadre }: SpotsTableProps) => {
   const isLoading = false;
   const isError = false;
 
-  // Datos dummy para pruebas basados en la estructura real de la API
-  const spots: Spot[] = [
-    {
-      id: 1,
-      nombre: "Restaurante El Parador",
-      direccion: "Av. Corrientes 1234, Buenos Aires",
-      link_direccion: "https://maps.google.com/corrientes1234",
-      telefono: "+54 11 4567-8900",
-      logo_url: "https://via.placeholder.com/40",
-      descripcion: "Restaurante de comida tradicional argentina",
-      reservas: "https://reservas.elparador.com",
-      menu: "https://menu.elparador.com",
-      delivery: "https://delivery.elparador.com",
-      web: "https://elparador.com.ar",
-      is_featured: true,
-      instagram: "elparador",
-      youtube: "elparadorok",
-      seccion_id: 1,
-      seccion_nombre: "Restaurantes",
-      seccion_padre: "comer",
-    },
-    {
-      id: 2,
-      nombre: "Café Central",
-      direccion: "San Martín 567, Rosario",
-      link_direccion: "https://maps.google.com/sanmartin567",
-      telefono: "+54 341 456-7890",
-      logo_url: "https://via.placeholder.com/40",
-      descripcion: "Café tradicional del centro de Rosario",
-      reservas: "",
-      menu: "https://menu.cafecentral.com",
-      delivery: "",
-      web: "https://cafecentral.com",
-      is_featured: false,
-      instagram: "cafecentral",
-      youtube: "",
-      seccion_id: 1,
-      seccion_nombre: "Restaurantes",
-      seccion_padre: "comer",
-    },
-    {
-      id: 3,
-      nombre: "Hotel Plaza",
-      direccion: "Plaza San Martín 123, Córdoba",
-      link_direccion: "https://maps.google.com/plazasanmartin123",
-      telefono: "+54 351 789-0123",
-      logo_url: "https://via.placeholder.com/40",
-      descripcion: "Hotel 4 estrellas en el centro de Córdoba",
-      reservas: "https://reservas.hotelplaza.com",
-      menu: "",
-      delivery: "",
-      web: "https://hotelplaza.com.ar",
-      is_featured: true,
-      instagram: "hotelplaza",
-      youtube: "hotelplazacordoba",
-      seccion_id: 5,
-      seccion_nombre: "Hoteles",
-      seccion_padre: "dormir",
-    },
-    {
-      id: 4,
-      nombre: "Bar La Esquina",
-      direccion: "Pellegrini 890, Mendoza",
-      link_direccion: "https://maps.google.com/pellegrini890",
-      telefono: "+54 261 234-5678",
-      logo_url: "",
-      descripcion: "Bar de barrio con ambiente familiar",
-      reservas: "",
-      menu: "",
-      delivery: "",
-      web: "",
-      is_featured: false,
-      instagram: "",
-      youtube: "",
-      seccion_id: 3,
-      seccion_nombre: "Bares",
-      seccion_padre: "salir",
-    },
-    {
-      id: 5,
-      nombre: "Parrilla Don Juan",
-      direccion: "Maipú 456, Mar del Plata",
-      link_direccion: "https://maps.google.com/maipu456",
-      telefono: "",
-      logo_url: "https://via.placeholder.com/40",
-      descripcion: "Parrilla tradicional frente al mar",
-      reservas: "https://reservas.parrilladonjuan.com",
-      menu: "https://menu.parrilladonjuan.com",
-      delivery: "https://delivery.parrilladonjuan.com",
-      web: "https://parrilladonjuan.com",
-      is_featured: false,
-      instagram: "parrilladonjuan",
-      youtube: "",
-      seccion_id: 1,
-      seccion_nombre: "Restaurantes",
-      seccion_padre: "comer",
-    },
-    {
-      id: 6,
-      nombre: "Parrilla Don Juan",
-      direccion: "Maipú 456, Mar del Plata",
-      link_direccion: "https://maps.google.com/maipu456",
-      telefono: "",
-      logo_url: "https://via.placeholder.com/40",
-      descripcion: "Parrilla tradicional frente al mar",
-      reservas: "https://reservas.parrilladonjuan.com",
-      menu: "https://menu.parrilladonjuan.com",
-      delivery: "https://delivery.parrilladonjuan.com",
-      web: "https://parrilladonjuan.com",
-      is_featured: false,
-      instagram: "parrilladonjuan",
-      youtube: "",
-      seccion_id: 2,
-      seccion_nombre: "Eventos",
-      seccion_padre: "comer",
-    },
-  ];
+  // Datos importados desde dummydata.ts
+  const spots = dummySpots;
 
-  // Filtrar spots por seccion_padre si se proporciona
-  const filteredSpots = seccionPadre
+  // Filtrar spots por seccion_id si se proporciona, sino por seccion_padre
+  const filteredSpots = seccionId
+    ? spots.filter((spot) => spot.seccion_id === seccionId)
+    : seccionPadre
     ? spots.filter((spot) => spot.seccion_padre === seccionPadre)
     : spots;
 

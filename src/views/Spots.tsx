@@ -11,6 +11,8 @@ import {
   Plus,
   Trash2,
   Edit,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import SpotsTable from "./SpotsTable";
 import NewSectionModal from "@/components/NewSectionModal";
@@ -86,6 +88,9 @@ const Spots = () => {
   const [selectedSectionType, setSelectedSectionType] = useState<string | null>(
     null
   );
+  const [openSubsections, setOpenSubsections] = useState<Set<number>>(
+    new Set()
+  );
   const [isNewSectionModalOpen, setIsNewSectionModalOpen] = useState(false);
   const [isEditSectionModalOpen, setIsEditSectionModalOpen] = useState(false);
   const [sectionToEdit, setSectionToEdit] = useState<{
@@ -105,6 +110,19 @@ const Spots = () => {
 
   const handleSectionTypeClick = (sectionType: string) => {
     setSelectedSectionType(sectionType);
+    setOpenSubsections(new Set()); // Reset open subsections when changing section type
+  };
+
+  const toggleSubsection = (subsectionId: number) => {
+    setOpenSubsections((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(subsectionId)) {
+        newSet.delete(subsectionId);
+      } else {
+        newSet.add(subsectionId);
+      }
+      return newSet;
+    });
   };
 
   const handleDeleteSection = (section: { id: number; nombre: string }) => {
@@ -185,7 +203,18 @@ const Spots = () => {
         </div>
         <div className="space-y-4">
           {Array.from({ length: 6 }).map((_, index) => (
-            <Skeleton key={index} className="h-8 w-3/4 rounded" />
+            <div key={index} className="border border-gray-200 rounded-lg">
+              <div className="flex items-center justify-between p-4">
+                <div className="text-left flex-1 flex items-center gap-2">
+                  <Skeleton className="h-4 w-4 rounded" />
+                  <Skeleton className="h-6 w-3/4 rounded" />
+                </div>
+                <div className="flex gap-1">
+                  <Skeleton className="h-8 w-8 rounded" />
+                  <Skeleton className="h-8 w-8 rounded" />
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>
@@ -238,64 +267,78 @@ const Spots = () => {
 
       <div className="space-y-4">
         {secciones?.map((seccion) => (
-          <div
-            key={seccion.id}
-            className="flex items-center justify-between border-b border-gray-200 pb-2"
-          >
-            <h2 className="text-xl font-semibold text-gray-900">
-              {seccion.nombre}{" "}
-              <span className="text-sm text-gray-500 font-normal">
-                (ID: {seccion.id})
-              </span>
-            </h2>
-            <div className="flex gap-1">
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => handleEditSection(seccion)}
-                    className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
-                    aria-label="Editar sección"
+          <div key={seccion.id} className="border border-gray-200 rounded-lg">
+            <div className="flex items-center justify-between p-4">
+              <button
+                onClick={() => toggleSubsection(seccion.id)}
+                className="text-left flex-1 flex items-center gap-2 hover:bg-gray-50 rounded p-2 transition-colors"
+              >
+                {openSubsections.has(seccion.id) ? (
+                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                ) : (
+                  <ChevronRight className="h-4 w-4 text-gray-500" />
+                )}
+                <h2 className="text-xl font-semibold text-gray-900">
+                  {seccion.nombre}{" "}
+                  <span className="text-sm text-gray-500 font-normal">
+                    (ID: {seccion.id})
+                  </span>
+                </h2>
+              </button>
+              <div className="flex gap-1">
+                <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleEditSection(seccion)}
+                      className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+                      aria-label="Editar sección"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content
+                    side="bottom"
+                    sideOffset={8}
+                    className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg"
                   >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                </Tooltip.Trigger>
-                <Tooltip.Content
-                  side="bottom"
-                  sideOffset={8}
-                  className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg"
-                >
-                  Editar sección
-                </Tooltip.Content>
-              </Tooltip.Root>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => handleDeleteSection(seccion)}
-                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                    aria-label="Eliminar sección"
+                    Editar sección
+                  </Tooltip.Content>
+                </Tooltip.Root>
+                <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => handleDeleteSection(seccion)}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      aria-label="Eliminar sección"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content
+                    side="bottom"
+                    sideOffset={8}
+                    className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg"
                   >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </Tooltip.Trigger>
-                <Tooltip.Content
-                  side="bottom"
-                  sideOffset={8}
-                  className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg"
-                >
-                  Eliminar sección
-                </Tooltip.Content>
-              </Tooltip.Root>
+                    Eliminar sección
+                  </Tooltip.Content>
+                </Tooltip.Root>
+              </div>
             </div>
+
+            {openSubsections.has(seccion.id) && (
+              <div className="border-t border-gray-200 p-4 bg-gray-50">
+                <SpotsTable
+                  seccionPadre={selectedSectionType}
+                  seccionId={seccion.id}
+                />
+              </div>
+            )}
           </div>
         ))}
-
-        <div className="mt-6">
-          <SpotsTable seccionPadre={selectedSectionType} />
-        </div>
       </div>
 
       {secciones?.length === 0 && (
