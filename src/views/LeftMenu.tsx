@@ -1,4 +1,5 @@
-import { Home, Calendar, Users, Settings, BarChart, Menu } from "lucide-react";
+import { Home, Store, Menu } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 interface LeftMenuProps {
   menuOpen: boolean;
@@ -6,14 +7,13 @@ interface LeftMenuProps {
 }
 
 const menu = [
-  { label: "Dashboard", icon: Home },
-  { label: "Eventos", icon: Calendar },
-  { label: "Usuarios", icon: Users },
-  { label: "Reportes", icon: BarChart },
-  { label: "Configuración", icon: Settings },
+  { label: "Eventos", icon: Home, path: "/events" },
+  { label: "Negocios", icon: Store, path: "/negocios" },
 ];
 
 const LeftMenu = ({ menuOpen, setMenuOpen }: LeftMenuProps) => {
+  const location = useLocation();
+
   return (
     <>
       {/* Mobile menu button */}
@@ -32,16 +32,24 @@ const LeftMenu = ({ menuOpen, setMenuOpen }: LeftMenuProps) => {
       >
         <div className="px-6 py-4 text-xl font-bold tracking-tight">Panel</div>
         <nav className="flex-1 px-2 space-y-1">
-          {menu.map((item) => (
-            <a
-              key={item.label}
-              href="#"
-              className="group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors"
-            >
-              <item.icon className="h-5 w-5" />
-              {item.label}
-            </a>
-          ))}
+          {menu.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <Link
+                key={item.label}
+                to={item.path}
+                className={`group flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  isActive
+                    ? "bg-accent text-accent-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                }`}
+                onClick={() => setMenuOpen(false)}
+              >
+                <item.icon className="h-5 w-5" />
+                {item.label}
+              </Link>
+            );
+          })}
         </nav>
       </aside>
     </>

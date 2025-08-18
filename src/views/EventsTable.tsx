@@ -38,11 +38,11 @@ import { useShowsQuery } from "@/services/useShowsQuery";
 import { Event } from "@/services/types/event";
 import { useDeleteShowMutation } from "@/services/useDeleteShowMutation";
 
-interface TableUIProps {
+interface EventsTableProps {
   search: string;
 }
 
-const TableUI = ({ search }: TableUIProps) => {
+const EventsTable = ({ search }: EventsTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 15;
 
@@ -384,4 +384,4 @@ const TableUI = ({ search }: TableUIProps) => {
   );
 };
 
-export default TableUI;
+export default EventsTable;
