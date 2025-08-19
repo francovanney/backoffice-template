@@ -2,6 +2,14 @@ import { useGetSectionsQuery } from "@/services/useGetSectionsQuery";
 import { useSpotsQuery } from "@/services/useSpotsQuery";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrum";
 import { useState } from "react";
 import {
   Utensils,
@@ -177,16 +185,23 @@ const Spots = () => {
   };
 
   const handleAddSpot = (section: { id: number; nombre: string }) => {
-    console.log("Agregar spot para la sección:", section);
+    console.log("Agregar comercio para la sección:", section);
     toast.success(
-      `Funcionalidad para agregar spot en ${section.nombre} próximamente`
+      `Funcionalidad para agregar comercio en ${section.nombre} próximamente`
     );
   };
 
   if (!selectedSectionType) {
     return (
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Selecciona una categoría</h1>
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbPage>Negocios</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+        <h1 className="text-2xl font-bold mb-6">Categorías</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {SECTION_TYPES.map((sectionType) => (
             <SectionTypeCard
@@ -204,9 +219,32 @@ const Spots = () => {
   if (isLoading) {
     return (
       <div className="p-6">
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelectedSectionType(null);
+                }}
+              >
+                Negocios
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="capitalize">
+                {selectedSectionType}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">
-            Sub-Secciones de {selectedSectionType}
+            Sub-Categoría de{" "}
+            {selectedSectionType.charAt(0).toUpperCase() +
+              selectedSectionType.slice(1)}
           </h2>
           <button
             onClick={() => setSelectedSectionType(null)}
@@ -238,9 +276,32 @@ const Spots = () => {
   if (error) {
     return (
       <div className="p-6">
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelectedSectionType(null);
+                }}
+              >
+                Negocios
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage className="capitalize">
+                {selectedSectionType}
+              </BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">
-            Sub-Secciones de {selectedSectionType}
+            Sub-Categoría de{" "}
+            {selectedSectionType.charAt(0).toUpperCase() +
+              selectedSectionType.slice(1)}
           </h2>
           <button
             onClick={() => setSelectedSectionType(null)}
@@ -250,7 +311,9 @@ const Spots = () => {
           </button>
         </div>
         <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          Error al cargar las secciones de {selectedSectionType}
+          Error al cargar las Sub-Categorías de{" "}
+          {selectedSectionType.charAt(0).toUpperCase() +
+            selectedSectionType.slice(1)}
         </div>
       </div>
     );
@@ -258,9 +321,32 @@ const Spots = () => {
 
   return (
     <div className="p-6">
+      <Breadcrumb className="mb-6">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setSelectedSectionType(null);
+              }}
+            >
+              Negocios
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage className="capitalize">
+              {selectedSectionType}
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">
-          Sub-Secciones de {selectedSectionType}
+          Sub-Categoría de{" "}
+          {selectedSectionType.charAt(0).toUpperCase() +
+            selectedSectionType.slice(1)}
         </h2>
         <div className="flex gap-2">
           <Button
@@ -268,7 +354,7 @@ const Spots = () => {
             className="flex items-center gap-2"
           >
             <Plus className="h-4 w-4" />
-            Nueva Sub-Sección
+            Nueva Sub-Categoría
           </Button>
           <button
             onClick={() => setSelectedSectionType(null)}
@@ -292,11 +378,13 @@ const Spots = () => {
                 ) : (
                   <ChevronRight className="h-4 w-4 text-gray-500" />
                 )}
-                <h2 className="text-xl font-semibold text-gray-900">
-                  {seccion.nombre}{" "}
-                  <span className="text-sm text-gray-500 font-normal">
-                    (ID: {seccion.id} • {getSpotCountForSection(seccion.id)}{" "}
-                    spots)
+                <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-3">
+                  <span>{seccion.nombre}</span>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    {getSpotCountForSection(seccion.id)} comercios
+                  </span>
+                  <span className="text-sm text-gray-400 font-normal">
+                    (ID: {seccion.id})
                   </span>
                 </h2>
               </button>
@@ -309,17 +397,17 @@ const Spots = () => {
                         variant="ghost"
                         onClick={() => handleAddSpot(seccion)}
                         className="text-green-500 hover:text-green-700 hover:bg-green-50"
-                        aria-label="Agregar spot"
+                        aria-label="Agregar Sub-Categoría"
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
                     </Tooltip.Trigger>
                     <Tooltip.Content
-                      side="bottom"
+                      side="top"
                       sideOffset={8}
-                      className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg"
+                      className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg z-50"
                     >
-                      Agregar spot
+                      Agregar Sub-Categoría
                     </Tooltip.Content>
                   </Tooltip.Root>
                   <Tooltip.Root>
@@ -329,17 +417,17 @@ const Spots = () => {
                         variant="ghost"
                         onClick={() => handleEditSection(seccion)}
                         className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
-                        aria-label="Editar sección"
+                        aria-label="Editar Sub-Categoría"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
                     </Tooltip.Trigger>
                     <Tooltip.Content
-                      side="bottom"
+                      side="top"
                       sideOffset={8}
-                      className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg"
+                      className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg z-50"
                     >
-                      Editar sección
+                      Editar Sub-Categoría
                     </Tooltip.Content>
                   </Tooltip.Root>
                   <Tooltip.Root>
@@ -349,17 +437,17 @@ const Spots = () => {
                         variant="ghost"
                         onClick={() => handleDeleteSection(seccion)}
                         className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                        aria-label="Eliminar sección"
+                        aria-label="Eliminar Sub-Categoría"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </Tooltip.Trigger>
                     <Tooltip.Content
-                      side="bottom"
+                      side="top"
                       sideOffset={8}
-                      className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg"
+                      className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg z-50"
                     >
-                      Eliminar sección
+                      Eliminar Sub-Categoría
                     </Tooltip.Content>
                   </Tooltip.Root>
                 </div>
@@ -381,7 +469,9 @@ const Spots = () => {
       {secciones?.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500">
-            No hay secciones disponibles para {selectedSectionType}
+            No hay secciones disponibles para{" "}
+            {selectedSectionType.charAt(0).toUpperCase() +
+              selectedSectionType.slice(1)}
           </p>
         </div>
       )}

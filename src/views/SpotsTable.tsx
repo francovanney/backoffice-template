@@ -3,6 +3,7 @@ import { usePagination } from "@/hooks/usePagination";
 import { useState, useEffect } from "react";
 import { useSpotsQuery } from "@/services/useSpotsQuery";
 import { type Spot } from "@/services/types/spot";
+import * as Tooltip from "@radix-ui/react-tooltip";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -97,12 +98,12 @@ const SpotsTable = ({
       <ConfirmationModal
         open={true}
         onOpenChange={(open: boolean) => !open && close()}
-        title="¿Desea eliminar este spot?"
+        title="¿Desea eliminar este comercio?"
         confirmLabel="Eliminar"
         cancelLabel="Cancelar"
         onConfirm={() => {
           // TODO: Implementar lógica de eliminación
-          toast.success("Spot eliminado correctamente");
+          toast.success("Comercio eliminado correctamente");
           close();
         }}
         onCancel={close}
@@ -117,7 +118,7 @@ const SpotsTable = ({
 
   const handleEdit = (spot: Spot) => {
     // TODO: Implementar modal de edición
-    console.log("Editar spot:", spot);
+    console.log("Editar comercio:", spot);
   };
 
   const SkeletonTableRows = () => {
@@ -157,7 +158,7 @@ const SpotsTable = ({
 
   if (isLoading) {
     return (
-      <div className="w-full h-full flex flex-col">
+      <div className="w-full h-full flex flex-col relative">
         <div className="flex-shrink-0 bg-white border-b shadow-sm">
           <Table>
             <TableHeader>
@@ -182,7 +183,7 @@ const SpotsTable = ({
           </Table>
         </div>
 
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto relative z-0">
           <Table>
             <TableBody>
               <SkeletonTableRows />
@@ -198,7 +199,7 @@ const SpotsTable = ({
   }
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col relative">
       <div className="flex-shrink-0 bg-white border-b shadow-sm">
         <Table>
           <TableHeader>
@@ -221,20 +222,20 @@ const SpotsTable = ({
         </Table>
       </div>
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto relative z-0">
         <Table>
           <TableBody>
             {isError && (
               <TableRow>
                 <TableCell colSpan={7} className="text-center text-destructive">
-                  Error al cargar los spots
+                  Error al cargar los comercios
                 </TableCell>
               </TableRow>
             )}
             {paginatedSpots && paginatedSpots.length === 0 && !isLoading && (
               <TableRow>
                 <TableCell colSpan={7} className="text-center">
-                  No hay spots disponibles
+                  No hay comercios disponibles
                 </TableCell>
               </TableRow>
             )}
@@ -292,22 +293,44 @@ const SpotsTable = ({
                   </TableCell>
                   <TableCell className="text-center w-24">
                     <div className="flex gap-2 justify-center">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        aria-label="Editar"
-                        onClick={() => handleEdit(spot)}
-                      >
-                        <EditIcon className="text-primary" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        aria-label="Eliminar"
-                        onClick={() => handleDelete(spot)}
-                      >
-                        <DeleteIcon className="text-destructive" />
-                      </Button>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            aria-label="Editar"
+                            onClick={() => handleEdit(spot)}
+                          >
+                            <EditIcon className="text-primary" />
+                          </Button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Content
+                          side="top"
+                          sideOffset={8}
+                          className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg z-50"
+                        >
+                          Editar comercio
+                        </Tooltip.Content>
+                      </Tooltip.Root>
+                      <Tooltip.Root>
+                        <Tooltip.Trigger asChild>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            aria-label="Eliminar"
+                            onClick={() => handleDelete(spot)}
+                          >
+                            <DeleteIcon className="text-destructive" />
+                          </Button>
+                        </Tooltip.Trigger>
+                        <Tooltip.Content
+                          side="top"
+                          sideOffset={8}
+                          className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg z-50"
+                        >
+                          Eliminar comercio
+                        </Tooltip.Content>
+                      </Tooltip.Root>
                     </div>
                   </TableCell>
                 </TableRow>

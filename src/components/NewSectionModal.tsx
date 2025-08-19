@@ -56,7 +56,7 @@ const NewSectionModal = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent contentClassName="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Nueva Sub-Sección en {sectionParent}</DialogTitle>
+          <DialogTitle>Nueva Sub-Categoría en {sectionParent}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
