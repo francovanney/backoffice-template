@@ -1,10 +1,12 @@
-import { useModal } from "@/hooks/useModal";
-import { usePagination } from "@/hooks/usePagination";
+// React imports
 import { useState, useEffect } from "react";
-import { useSpotsQuery } from "@/services/useSpotsQuery";
-import { type Spot } from "@/services/types/spot";
-import * as Tooltip from "@radix-ui/react-tooltip";
 
+// External libraries
+import { Phone } from "lucide-react";
+import * as Tooltip from "@radix-ui/react-tooltip";
+import toast from "react-hot-toast";
+
+// UI Components
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -29,11 +31,17 @@ import {
   EditIcon,
   DeleteIcon,
 } from "@/components/ui/icons";
-import { Phone } from "lucide-react";
 
-import toast from "react-hot-toast";
+// App Components
 import ConfirmationModal from "@/components/ConfirmationModal";
 import EditSpotModal from "@/components/EditSpotModal";
+
+// Hooks & Services
+import { useModal } from "@/hooks/useModal";
+import { usePagination } from "@/hooks/usePagination";
+import { useSpotsQuery } from "@/services/useSpotsQuery";
+import { useDeleteSpotMutation } from "@/services/useDeleteSpotMutation";
+import { type Spot } from "@/services/types/spot";
 
 interface SpotsTableProps {
   search?: string;
@@ -49,20 +57,17 @@ const SpotsTable = ({
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 15;
 
-  // Usar el servicio real de spots
   const {
     data: allSpots,
     isLoading,
     error: isError,
   } = useSpotsQuery(seccionPadre || "");
 
-  // Filtrar spots por seccion_id si se proporciona, sino usar todos los spots de la sección padre
   const filteredSpots =
     seccionId && allSpots
       ? allSpots.filter((spot: Spot) => spot.seccion_id === seccionId)
       : allSpots || [];
 
-  // Aplicar filtro de búsqueda si existe
   const searchFilteredSpots = search
     ? filteredSpots.filter(
         (spot: Spot) =>
@@ -74,12 +79,12 @@ const SpotsTable = ({
   const totalPages = Math.ceil(searchFilteredSpots.length / pageSize);
   const total = searchFilteredSpots.length;
 
-  // Paginación local de los resultados filtrados
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = startIndex + pageSize;
   const paginatedSpots = searchFilteredSpots.slice(startIndex, endIndex);
 
   const { openModal, close } = useModal();
+  const deleteSpotMutation = useDeleteSpotMutation();
 
   const { pageNumbers, hasPrevious, hasNext, showPagination } = usePagination({
     currentPage,
@@ -103,12 +108,23 @@ const SpotsTable = ({
         confirmLabel="Eliminar"
         cancelLabel="Cancelar"
         onConfirm={() => {
-          // TODO: Implementar lógica de eliminación
-          toast.success("Comercio eliminado correctamente");
-          close();
+          deleteSpotMutation.mutate(
+            { id: spot.id, seccionPadre: seccionPadre || "" },
+            {
+              onSuccess: () => {
+                toast.success("Comercio eliminado correctamente");
+                close();
+              },
+              onError: (error) => {
+                console.error("Error al eliminar comercio:", error);
+                toast.error("Error al eliminar comercio");
+                close();
+              },
+            }
+          );
         }}
         onCancel={close}
-        isLoading={false}
+        isLoading={deleteSpotMutation.isPending}
       >
         <div className="py-2 text-center text-sm text-gray-700">
           {spot.nombre}

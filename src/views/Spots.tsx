@@ -1,15 +1,3 @@
-import { useGetSectionsQuery } from "@/services/useGetSectionsQuery";
-import { useSpotsQuery } from "@/services/useSpotsQuery";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrum";
 import { useState } from "react";
 import {
   Utensils,
@@ -23,15 +11,29 @@ import {
   ChevronDown,
   ChevronRight,
 } from "lucide-react";
-import SpotsTable from "./SpotsTable";
+import * as Tooltip from "@radix-ui/react-tooltip";
+import toast from "react-hot-toast";
+
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrum";
+import ConfirmationModal from "@/components/ConfirmationModal";
 import NewSectionModal from "@/components/NewSectionModal";
 import EditSectionModal from "@/components/EditSectionModal";
 import NewSpotModal from "@/components/NewSpotModal";
-import { useDeleteSectionMutation } from "@/services/useDeleteSectionMutation";
+import SpotsTable from "./SpotsTable";
+
 import { useModal } from "@/hooks/useModal";
-import ConfirmationModal from "@/components/ConfirmationModal";
-import * as Tooltip from "@radix-ui/react-tooltip";
-import toast from "react-hot-toast";
+import { useGetSectionsQuery } from "@/services/useGetSectionsQuery";
+import { useSpotsQuery } from "@/services/useSpotsQuery";
+import { useDeleteSectionMutation } from "@/services/useDeleteSectionMutation";
 import { SECTION_TYPES } from "@/const/sectionsTypes";
 
 const SectionTypeCard = ({

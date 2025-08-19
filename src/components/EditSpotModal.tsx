@@ -1,12 +1,17 @@
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { X } from "lucide-react";
+import { FileUploader } from "react-drag-drop-files";
+import toast from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form-input";
 import Spinner from "@/components/ui/Spinner";
 
 import { useModal } from "@/hooks/useModal";
+import { useUpdateSpotMutation } from "@/services/useUpdateSpotMutation";
+import { SPOTS_KEY } from "@/const/queryKeys";
 import { Spot } from "@/services/types/spot";
 
 interface EditSpotModalProps {
@@ -15,35 +20,64 @@ interface EditSpotModalProps {
 
 type SpotFormData = {
   nombre: string;
-  direccion: string;
-  link_direccion: string;
-  telefono: string;
-  logo_url: string;
-  descripcion: string;
-  instagram: string;
+  direccion?: string;
+  link_direccion?: string;
+  telefono?: string;
+  descripcion?: string;
+  instagram?: string;
+  reservas?: string;
+  menu?: string;
+  delivery?: string;
+  web?: string;
 };
 
 export default function EditSpotModal({ spot }: EditSpotModalProps) {
   const { close } = useModal();
+  const queryClient = useQueryClient();
+  const updateSpotMutation = useUpdateSpotMutation();
+
+  const fileTypes = ["JPG", "JPEG", "PNG"];
+  const [file, setFile] = useState<File | null>(null);
+  const [logoError, setLogoError] = useState<string>("");
+
+  const handleChange = (uploadedFile: File | File[]) => {
+    const singleFile = Array.isArray(uploadedFile)
+      ? uploadedFile[0]
+      : uploadedFile;
+
+    if (singleFile.size > 1048576) {
+      toast.error(
+        "El archivo es demasiado grande. El tamaño máximo permitido es 1MB."
+      );
+      setLogoError("El archivo es demasiado grande");
+      setFile(null);
+    } else {
+      setFile(singleFile);
+      setLogoError("");
+      toast.success("Imagen cargada correctamente");
+    }
+  };
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<SpotFormData>({
     defaultValues: {
       nombre: "",
       direccion: "",
       link_direccion: "",
       telefono: "",
-      logo_url: "",
       descripcion: "",
       instagram: "",
+      reservas: "",
+      menu: "",
+      delivery: "",
+      web: "",
     },
   });
 
-  // Reset form when spot changes
   useEffect(() => {
     if (spot) {
       reset({
@@ -51,19 +85,55 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
         direccion: spot.direccion || "",
         link_direccion: spot.link_direccion || "",
         telefono: spot.telefono || "",
-        logo_url: spot.logo_url || "",
         descripcion: spot.descripcion || "",
         instagram: spot.instagram || "",
+        reservas: spot.reservas || "",
+        menu: spot.menu || "",
+        delivery: spot.delivery || "",
+        web: spot.web || "",
       });
     }
   }, [spot, reset]);
 
-  const onSubmit = (data: SpotFormData) => {
-    console.log("Datos del spot editado:", {
-      id: spot?.id,
-      ...data,
-      seccion_id: spot?.seccion_id,
-    });
+  const onSubmit = async (data: SpotFormData) => {
+    if (!spot?.id) {
+      toast.error("Error: ID del spot no encontrado");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("nombre", data.nombre);
+      if (data.direccion) formData.append("direccion", data.direccion);
+      if (data.link_direccion)
+        formData.append("link_direccion", data.link_direccion);
+      if (data.telefono) formData.append("telefono", data.telefono);
+      if (data.descripcion) formData.append("descripcion", data.descripcion);
+      if (data.instagram) formData.append("instagram", data.instagram);
+      if (data.reservas) formData.append("reservas", data.reservas);
+      if (data.menu) formData.append("menu", data.menu);
+      if (data.delivery) formData.append("delivery", data.delivery);
+      if (data.web) formData.append("web", data.web);
+
+      formData.append("seccion_id", spot.seccion_id.toString());
+
+      if (!file && spot.logo_url) {
+        formData.append("logo_url", spot.logo_url);
+      }
+
+      if (file) {
+        formData.append("logo", file);
+      }
+
+      await updateSpotMutation.mutateAsync({ id: spot.id, data: formData });
+
+      toast.success("Spot actualizado exitosamente");
+      queryClient.invalidateQueries({ queryKey: [SPOTS_KEY] });
+      close();
+    } catch (error) {
+      console.error("Error updating spot:", error);
+      toast.error("Error al actualizar el spot");
+    }
   };
 
   return (
@@ -102,7 +172,13 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
                 <FormInput
                   label="Nombre *"
                   type="text"
-                  register={register("nombre")}
+                  register={register("nombre", {
+                    required: "El nombre es requerido",
+                    maxLength: {
+                      value: 30,
+                      message: "El nombre no puede exceder 30 caracteres",
+                    },
+                  })}
                   error={errors.nombre?.message}
                   placeholder="Ingrese el nombre del comercio"
                 />
@@ -118,7 +194,15 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
                 <FormInput
                   label="Link Dirección"
                   type="text"
-                  register={register("link_direccion")}
+                  register={register("link_direccion", {
+                    validate: (value) => {
+                      if (!value) return true;
+                      if (!value.includes("www")) {
+                        return "Debe contener www";
+                      }
+                      return true;
+                    },
+                  })}
                   error={errors.link_direccion?.message}
                   placeholder="Ingrese el enlace de la dirección"
                 />
@@ -126,23 +210,73 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
                 <FormInput
                   label="Teléfono"
                   type="text"
-                  register={register("telefono")}
+                  register={register("telefono", {
+                    pattern: {
+                      value: /^[0-9]*$/,
+                      message: "El teléfono debe contener solo números",
+                    },
+                  })}
                   error={errors.telefono?.message}
                   placeholder="Ingrese el número de teléfono"
                 />
 
-                <FormInput
-                  label="Logo (URL)"
-                  type="text"
-                  register={register("logo_url")}
-                  error={errors.logo_url?.message}
-                  placeholder="Ingrese la URL del logo"
-                />
+                <div>
+                  <label
+                    htmlFor="logo"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Logo
+                  </label>
+                  <div className="space-y-3">
+                    <FileUploader
+                      handleChange={handleChange}
+                      name="logo"
+                      types={fileTypes}
+                      multiple={false}
+                      label="Arrastre o suba una imagen"
+                      hoverTitle="Arrastre aquí"
+                    />
+                    {file && (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">
+                          Archivo seleccionado: {file.name}
+                        </p>
+                        <div className="mt-2 relative w-full h-32 border rounded-md overflow-hidden">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt="Vista previa"
+                            className="object-contain w-full h-full"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {!file && spot?.logo_url && (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">Logo actual:</p>
+                        <div className="mt-2 relative w-full h-32 border rounded-md overflow-hidden">
+                          <img
+                            src={spot.logo_url}
+                            alt="Logo actual"
+                            className="object-contain w-full h-full"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {logoError && (
+                      <p className="mt-1 text-sm text-red-600">{logoError}</p>
+                    )}
+                  </div>
+                </div>
 
                 <FormInput
                   label="Descripción"
                   type="text"
-                  register={register("descripcion")}
+                  register={register("descripcion", {
+                    maxLength: {
+                      value: 50,
+                      message: "La descripción no puede exceder 50 caracteres",
+                    },
+                  })}
                   error={errors.descripcion?.message}
                   placeholder="Ingrese la descripción"
                 />
@@ -152,16 +286,57 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
                   type="text"
                   register={register("instagram")}
                   error={errors.instagram?.message}
-                  placeholder="Ingrese el Instagram (ej: @usuario)"
+                  placeholder="usuario"
+                  span="https://instagram.com/"
+                />
+
+                <FormInput
+                  label="Reservas"
+                  type="text"
+                  register={register("reservas")}
+                  error={errors.reservas?.message}
+                  placeholder="Información de reservas"
+                />
+
+                <FormInput
+                  label="Menú"
+                  type="text"
+                  register={register("menu")}
+                  error={errors.menu?.message}
+                  placeholder="Información del menú"
+                />
+
+                <FormInput
+                  label="Delivery"
+                  type="text"
+                  register={register("delivery")}
+                  error={errors.delivery?.message}
+                  placeholder="Información de delivery"
+                />
+
+                <FormInput
+                  label="Web"
+                  type="text"
+                  register={register("web", {
+                    validate: (value) => {
+                      if (!value) return true;
+                      if (!value.includes("www")) {
+                        return "Debe contener www";
+                      }
+                      return true;
+                    },
+                  })}
+                  error={errors.web?.message}
+                  placeholder="Sitio web"
                 />
 
                 <div className="flex justify-end pt-2">
                   <Button
                     className="w-full mt-2"
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={updateSpotMutation.isPending}
                   >
-                    {isSubmitting ? (
+                    {updateSpotMutation.isPending ? (
                       <div className="flex items-center justify-center gap-2">
                         <span className="flex">
                           <Spinner />

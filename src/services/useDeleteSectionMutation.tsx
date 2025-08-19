@@ -20,7 +20,6 @@ const useDeleteSectionMutation = () => {
       return response;
     },
     onSuccess: (_data, variables) => {
-      // Invalidar la query de secciones para actualizar la lista
       queryClient.invalidateQueries({
         queryKey: ["sections", variables.sectionParent],
       });

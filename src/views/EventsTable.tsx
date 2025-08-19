@@ -1,8 +1,7 @@
-import { useModal } from "@/hooks/useModal";
-import { usePagination } from "@/hooks/usePagination";
-import EditEventModal from "@/components/EditEventModal";
-import { format } from "date-fns";
 import { useState, useEffect } from "react";
+import { format } from "date-fns";
+import { Star } from "lucide-react";
+import toast from "react-hot-toast";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,14 +28,14 @@ import {
   EditIcon,
   DeleteIcon,
 } from "@/components/ui/icons";
-import { Star } from "lucide-react";
-
-import toast from "react-hot-toast";
 import ConfirmationModal from "@/components/ConfirmationModal";
+import EditEventModal from "@/components/EditEventModal";
 
+import { useModal } from "@/hooks/useModal";
+import { usePagination } from "@/hooks/usePagination";
 import { useShowsQuery } from "@/services/useShowsQuery";
-import { Event } from "@/services/types/event";
 import { useDeleteShowMutation } from "@/services/useDeleteShowMutation";
+import { Event } from "@/services/types/event";
 
 interface EventsTableProps {
   search: string;
