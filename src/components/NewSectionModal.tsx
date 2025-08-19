@@ -54,37 +54,41 @@ const NewSectionModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent contentClassName="sm:max-w-md">
+      <DialogContent contentClassName="sm:max-w-lg p-6">
         <DialogHeader>
           <DialogTitle>Nueva Sub-Categoría en {sectionParent}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <FormInput
-              label="Nombre de la sección"
-              type="text"
-              value={nombre}
-              onChange={(e) => setNombre(e.target.value)}
-              placeholder="Ej: Ropa, Calzado, etc."
-              required
-            />
-          </div>
+        <div className="pt-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <FormInput
+                label="Nombre de la sección"
+                type="text"
+                value={nombre}
+                onChange={(e) => setNombre(e.target.value)}
+                placeholder="Ej: Ropa, Calzado, etc."
+                required
+              />
+            </div>
 
-          <div className="flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={createSectionMutation.isPending}
-            >
-              Cancelar
-            </Button>
-            <Button type="submit" disabled={createSectionMutation.isPending}>
-              {createSectionMutation.isPending ? "Creando..." : "Crear Sección"}
-            </Button>
-          </div>
-        </form>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleClose}
+                disabled={createSectionMutation.isPending}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={createSectionMutation.isPending}>
+                {createSectionMutation.isPending
+                  ? "Creando..."
+                  : "Crear Sección"}
+              </Button>
+            </div>
+          </form>
+        </div>
       </DialogContent>
     </Dialog>
   );

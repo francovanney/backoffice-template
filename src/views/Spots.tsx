@@ -26,6 +26,7 @@ import {
 import SpotsTable from "./SpotsTable";
 import NewSectionModal from "@/components/NewSectionModal";
 import EditSectionModal from "@/components/EditSectionModal";
+import NewSpotModal from "@/components/NewSpotModal";
 import { useDeleteSectionMutation } from "@/services/useDeleteSectionMutation";
 import { useModal } from "@/hooks/useModal";
 import ConfirmationModal from "@/components/ConfirmationModal";
@@ -185,10 +186,7 @@ const Spots = () => {
   };
 
   const handleAddSpot = (section: { id: number; nombre: string }) => {
-    console.log("Agregar comercio para la sección:", section);
-    toast.success(
-      `Funcionalidad para agregar comercio en ${section.nombre} próximamente`
-    );
+    openModal(<NewSpotModal seccionId={section.id} />);
   };
 
   if (!selectedSectionType) {
@@ -397,7 +395,7 @@ const Spots = () => {
                         variant="ghost"
                         onClick={() => handleAddSpot(seccion)}
                         className="text-green-500 hover:text-green-700 hover:bg-green-50"
-                        aria-label="Agregar Sub-Categoría"
+                        aria-label="Agregar Comercio"
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
@@ -407,7 +405,7 @@ const Spots = () => {
                       sideOffset={8}
                       className="px-2 py-1 rounded bg-black text-white text-xs shadow-lg z-50"
                     >
-                      Agregar Sub-Categoría
+                      Agregar Comercio
                     </Tooltip.Content>
                   </Tooltip.Root>
                   <Tooltip.Root>

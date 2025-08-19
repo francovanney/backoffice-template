@@ -33,6 +33,7 @@ import { Phone } from "lucide-react";
 
 import toast from "react-hot-toast";
 import ConfirmationModal from "@/components/ConfirmationModal";
+import EditSpotModal from "@/components/EditSpotModal";
 
 interface SpotsTableProps {
   search?: string;
@@ -117,8 +118,7 @@ const SpotsTable = ({
   };
 
   const handleEdit = (spot: Spot) => {
-    // TODO: Implementar modal de edición
-    console.log("Editar comercio:", spot);
+    openModal(<EditSpotModal spot={spot} />);
   };
 
   const SkeletonTableRows = () => {

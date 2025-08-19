@@ -5,3 +5,7 @@ export const API_SHOWS_DELETE_URL = `${API_URL}/shows/deleteShow`;
 export const API_SHOWS_UPDATE_URL = `${API_URL}/shows/updateShow`;
 export const API_SECTIONS_URL = `${API_URL}/secciones/padre/`;
 export const API_SPOTS_URL = `${API_URL}/lugares/by-seccion-padre/`;
+export const API_COMERCIOS_URL = `${API_URL}/lugares/`;
+export const API_COMERCIOS_CREATE_URL = `${API_URL}/lugares/`;
+export const API_COMERCIOS_UPDATE_URL = `${API_URL}/lugares/`;
+export const API_COMERCIOS_DELETE_URL = `${API_URL}/lugares/`;
