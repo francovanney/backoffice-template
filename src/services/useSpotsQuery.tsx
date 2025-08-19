@@ -14,7 +14,6 @@ export function useSpotsQuery(selectedSectionType: string) {
     queryKey: [SPOTS_KEY, { selectedSectionType }],
     queryFn: () => fetchSpots(selectedSectionType),
     enabled: !!selectedSectionType,
-    staleTime: 5 * 60 * 1000,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
   });
 }

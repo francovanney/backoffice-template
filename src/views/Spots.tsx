@@ -216,7 +216,7 @@ const Spots = () => {
           </button>
         </div>
         <div className="space-y-4">
-          {Array.from({ length: 6 }).map((_, index) => (
+          {Array.from({ length: 4 }).map((_, index) => (
             <div key={index} className="border border-gray-200 rounded-lg">
               <div className="flex items-center justify-between p-4">
                 <div className="text-left flex-1 flex items-center gap-2">
@@ -367,7 +367,7 @@ const Spots = () => {
             </div>
 
             {openSubsections.has(seccion.id) && (
-              <div className="border-t border-gray-200 p-4 bg-gray-50">
+              <div className="border-t border-gray-200 bg-gray-50">
                 <SpotsTable
                   seccionPadre={selectedSectionType}
                   seccionId={seccion.id}
