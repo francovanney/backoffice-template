@@ -1,15 +1,11 @@
-import TableUI from "./TableUI";
+import { ReactNode } from "react";
 
 interface GlobalLayoutProps {
-  search: string;
+  children?: ReactNode;
 }
 
-const GlobalLayout = ({ search }: GlobalLayoutProps) => {
-  return (
-    <div className="h-full w-full">
-      <TableUI search={search} />
-    </div>
-  );
+const GlobalLayout = ({ children }: GlobalLayoutProps) => {
+  return <div className="h-full w-full">{children}</div>;
 };
 
 export default GlobalLayout;

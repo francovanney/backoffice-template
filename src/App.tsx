@@ -2,16 +2,19 @@ import { useEffect, useState, useCallback } from "react";
 import { Toaster } from "react-hot-toast";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import { app } from "./lib/firebaseConfig/firebase";
 import { useDebouncedValue } from "./hooks/useDebouncedValue";
 import { ModalProvider } from "./components/ModalManager";
 
 import GlobalLayout from "./views/GlobalLayout";
+import AppRouter from "./AppRouter";
 import Header from "./views/Header";
 import Login from "./components/Login";
 import LeftMenu from "./views/LeftMenu";
-import Filter from "./components/Filter";
+import ConditionalFilter from "./components/ConditionalFilter";
+import { API_URL } from "./const/apiUrls";
 
 const auth = getAuth(app);
 
@@ -21,7 +24,6 @@ const App = () => {
   const [search, setSearch] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
   const debouncedSearch = useDebouncedValue(search, 600);
-  const API_URL = import.meta.env.VITE_SERVER_API;
 
   const sendTokenToBackend = useCallback(
     async (firebaseUser: User, forceRefresh = false) => {
@@ -43,12 +45,12 @@ const App = () => {
         const data = await response.json();
         localStorage.setItem("accessToken", data.token);
         return true;
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error("Error refreshing token:", err);
         return false;
       }
     },
-    [API_URL]
+    []
   );
 
   const setupTokenRefresh = useCallback(
@@ -105,31 +107,39 @@ const App = () => {
           <Toaster />
           {!isLoading &&
             (user ? (
-              <>
-                <div className="fixed top-0 left-0 w-full z-50">
-                  <Header email={user?.email ?? ""} />
-                </div>
-                <main className="w-full h-screen pt-16 overflow-hidden flex">
-                  <LeftMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
-
-                  {menuOpen && (
-                    <div
-                      className="fixed inset-0 bg-black/30 z-30 md:hidden"
-                      onClick={() => setMenuOpen(false)}
+              <Router>
+                <>
+                  <div className="fixed top-0 left-0 w-full z-50">
+                    <Header
+                      email={user?.email ?? ""}
+                      menuOpen={menuOpen}
+                      setMenuOpen={setMenuOpen}
                     />
-                  )}
-
-                  <div className="flex-1 h-full overflow-hidden flex flex-col md:ml-64">
-                    <div className="flex-shrink-0 bg-white border-b">
-                      <Filter search={search} setSearch={setSearch} />
-                    </div>
-
-                    <div className="flex-1 overflow-hidden">
-                      <GlobalLayout search={debouncedSearch} />
-                    </div>
                   </div>
-                </main>
-              </>
+                  <main className="w-full h-screen pt-16 overflow-hidden flex">
+                    <LeftMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+
+                    {menuOpen && (
+                      <div
+                        className="fixed inset-0 bg-black/30 z-30 md:hidden"
+                        onClick={() => setMenuOpen(false)}
+                      />
+                    )}
+
+                    <div className="flex-1 h-full flex flex-col md:ml-64">
+                      <ConditionalFilter
+                        search={search}
+                        setSearch={setSearch}
+                      />
+                      <div className="flex-1 overflow-auto">
+                        <GlobalLayout>
+                          <AppRouter search={debouncedSearch} />
+                        </GlobalLayout>
+                      </div>
+                    </div>
+                  </main>
+                </>
+              </Router>
             ) : (
               <Login />
             ))}
