@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form-input";
 import { useModal } from "@/hooks/useModal";
 import NewEventModal from "@/components/NewEventModal";
-import { X } from "lucide-react";
+import { Plus, X } from "lucide-react";
 
 interface FilterProps {
   search: string;
@@ -17,7 +17,7 @@ const Filter = ({ search, setSearch }: FilterProps) => {
   };
 
   return (
-    <div className="flex gap-2 items-center mb-4 mt-2 ">
+    <div className="flex gap-2 items-center mb-4 mt-6 ">
       <div className="relative w-64 ml-4">
         <FormInput
           type="text"
@@ -45,7 +45,7 @@ const Filter = ({ search, setSearch }: FilterProps) => {
         type="button"
         size={"default"}
       >
-        Agregar
+        <Plus size={16} /> Agregar Evento
       </Button>
     </div>
   );

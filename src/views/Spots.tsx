@@ -355,8 +355,8 @@ const Spots = () => {
             className="flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-2"
             size="sm"
           >
-            <Plus className="h-4 w-4" />
-            <span className="hidden sm:inline ml-2">Nueva Sub-Categoría</span>
+            <Plus size={16} />
+            <span className="hidden sm:inline">Nueva Sub-Categoría</span>
           </Button>
           <Button
             onClick={() => setSelectedSectionType(null)}
@@ -364,8 +364,8 @@ const Spots = () => {
             className="flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-2"
             size="sm"
           >
-            <ChevronLeft className="h-4 w-4" />
-            <span className="hidden sm:inline ml-2">Volver</span>
+            <ChevronLeft size={16} />
+            <span className="hidden sm:inline">Volver</span>
           </Button>
         </div>
       </div>
