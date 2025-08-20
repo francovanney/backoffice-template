@@ -142,22 +142,22 @@ const SpotsTable = ({
       <>
         {Array.from({ length: pageSize }).map((_, i) => (
           <TableRow key={"skeleton-" + i}>
-            <TableCell className="text-center w-16">
+            <TableCell className="text-center w-16 hidden md:table-cell">
               <div className="w-10 h-10 rounded-full bg-gray-200/80 animate-pulse border flex-shrink-0 mx-auto" />
             </TableCell>
             <TableCell className="font-medium w-48">
               <div className="h-4 w-24 bg-gray-200/80 rounded animate-pulse" />
             </TableCell>
-            <TableCell className="w-48">
+            <TableCell className="w-48 hidden md:table-cell">
               <div className="h-4 w-28 bg-gray-200/80 rounded animate-pulse" />
             </TableCell>
-            <TableCell className="text-center w-20">
+            <TableCell className="text-center w-20 hidden md:table-cell">
               <div className="h-6 w-6 mx-auto bg-gray-200/80 rounded-full animate-pulse" />
             </TableCell>
-            <TableCell className="text-center w-16">
+            <TableCell className="text-center w-16 hidden md:table-cell">
               <div className="h-6 w-6 mx-auto bg-gray-200/80 rounded-full animate-pulse" />
             </TableCell>
-            <TableCell className="text-center w-20">
+            <TableCell className="text-center w-20 hidden md:table-cell">
               <div className="h-6 w-6 mx-auto bg-gray-200/80 rounded-full animate-pulse" />
             </TableCell>
             <TableCell className="text-center w-24">
@@ -179,16 +179,20 @@ const SpotsTable = ({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-center bg-white w-16">
+                <TableHead className="text-center bg-white w-16 hidden md:table-cell">
                   Logo
                 </TableHead>
                 <TableHead className="bg-white w-48">Nombre</TableHead>
-                <TableHead className="bg-white w-48">Dirección</TableHead>
-                <TableHead className="text-center bg-white w-20">
+                <TableHead className="bg-white w-48 hidden md:table-cell">
+                  Dirección
+                </TableHead>
+                <TableHead className="text-center bg-white w-20 hidden md:table-cell">
                   Instagram
                 </TableHead>
-                <TableHead className="text-center bg-white w-16">Web</TableHead>
-                <TableHead className="text-center bg-white w-20">
+                <TableHead className="text-center bg-white w-16 hidden md:table-cell">
+                  Web
+                </TableHead>
+                <TableHead className="text-center bg-white w-20 hidden md:table-cell">
                   Teléfono
                 </TableHead>
                 <TableHead className="text-center bg-white w-24">
@@ -220,14 +224,20 @@ const SpotsTable = ({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="text-center bg-white w-16">Logo</TableHead>
+              <TableHead className="text-center bg-white w-16 hidden md:table-cell">
+                Logo
+              </TableHead>
               <TableHead className="bg-white w-48">Nombre</TableHead>
-              <TableHead className="bg-white w-48">Dirección</TableHead>
-              <TableHead className="text-center bg-white w-20">
+              <TableHead className="bg-white w-48 hidden md:table-cell">
+                Dirección
+              </TableHead>
+              <TableHead className="text-center bg-white w-20 hidden md:table-cell">
                 Instagram
               </TableHead>
-              <TableHead className="text-center bg-white w-16">Web</TableHead>
-              <TableHead className="text-center bg-white w-20">
+              <TableHead className="text-center bg-white w-16 hidden md:table-cell">
+                Web
+              </TableHead>
+              <TableHead className="text-center bg-white w-20 hidden md:table-cell">
                 Teléfono
               </TableHead>
               <TableHead className="text-center bg-white w-24">
@@ -243,7 +253,7 @@ const SpotsTable = ({
           <TableBody>
             {isError && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-destructive">
+                <TableCell colSpan={7} className="text-center">
                   Error al cargar los comercios
                 </TableCell>
               </TableRow>
@@ -259,7 +269,7 @@ const SpotsTable = ({
               paginatedSpots.length > 0 &&
               paginatedSpots.map((spot: Spot) => (
                 <TableRow key={spot.id}>
-                  <TableCell className="text-center w-16">
+                  <TableCell className="text-center w-16 hidden md:table-cell">
                     <div className="w-10 h-10 rounded-full overflow-hidden border bg-gray-100 flex items-center justify-center flex-shrink-0 mx-auto">
                       <img
                         src={spot.logo_url || ""}
@@ -274,8 +284,10 @@ const SpotsTable = ({
                   <TableCell className="font-medium w-48">
                     <span>{spot.nombre}</span>
                   </TableCell>
-                  <TableCell className="w-48">{spot.direccion}</TableCell>
-                  <TableCell className="text-center w-20">
+                  <TableCell className="w-48 hidden md:table-cell">
+                    {spot.direccion}
+                  </TableCell>
+                  <TableCell className="text-center w-20 hidden md:table-cell">
                     {spot.instagram ? (
                       <a
                         href={`https://www.instagram.com/${spot.instagram}`}
@@ -286,7 +298,7 @@ const SpotsTable = ({
                       </a>
                     ) : null}
                   </TableCell>
-                  <TableCell className="text-center w-16">
+                  <TableCell className="text-center w-16 hidden md:table-cell">
                     {spot.web ? (
                       <a
                         href={spot.web}
@@ -297,7 +309,7 @@ const SpotsTable = ({
                       </a>
                     ) : null}
                   </TableCell>
-                  <TableCell className="text-center w-20">
+                  <TableCell className="text-center w-20 hidden md:table-cell">
                     {spot.telefono ? (
                       <a
                         href={`tel:${spot.telefono}`}

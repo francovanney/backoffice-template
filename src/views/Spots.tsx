@@ -10,6 +10,7 @@ import {
   Edit,
   ChevronDown,
   ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import toast from "react-hot-toast";
@@ -351,17 +352,21 @@ const Spots = () => {
         <div className="flex gap-2">
           <Button
             onClick={() => setIsNewSectionModalOpen(true)}
-            className="flex items-center gap-2"
+            className="flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-2"
+            size="sm"
           >
             <Plus className="h-4 w-4" />
-            Nueva Sub-Categoría
+            <span className="hidden sm:inline ml-2">Nueva Sub-Categoría</span>
           </Button>
-          <button
+          <Button
             onClick={() => setSelectedSectionType(null)}
-            className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+            variant="outline"
+            className="flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:px-3 sm:py-2"
+            size="sm"
           >
-            ← Volver
-          </button>
+            <ChevronLeft className="h-4 w-4" />
+            <span className="hidden sm:inline ml-2">Volver</span>
+          </Button>
         </div>
       </div>
 
@@ -383,9 +388,9 @@ const Spots = () => {
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     {getSpotCountForSection(seccion.id)}
                   </span>
-                  <span className="text-sm text-gray-400 font-normal">
+                  {/*                   <span className="text-sm text-gray-400 font-normal">
                     (ID: {seccion.id})
-                  </span>
+                  </span> */}
                 </h2>
               </button>
               {openSubsections.has(seccion.id) && (

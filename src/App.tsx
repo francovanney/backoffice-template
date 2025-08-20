@@ -110,7 +110,11 @@ const App = () => {
               <Router>
                 <>
                   <div className="fixed top-0 left-0 w-full z-50">
-                    <Header email={user?.email ?? ""} />
+                    <Header
+                      email={user?.email ?? ""}
+                      menuOpen={menuOpen}
+                      setMenuOpen={setMenuOpen}
+                    />
                   </div>
                   <main className="w-full h-screen pt-16 overflow-hidden flex">
                     <LeftMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
