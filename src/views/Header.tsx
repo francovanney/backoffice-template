@@ -27,7 +27,7 @@ const Header = ({ email }: HeaderProps) => {
         </div>
         <div className="flex items-center gap-8">
           <span>Bienvenido: {email ? email.split("@")[0] : ""}</span>
-          <Tooltip.Root>
+          {/*           <Tooltip.Root>
             <Tooltip.Trigger asChild>
               <span className="w-5 h-5 flex items-center justify-center">
                 <ThemeToggle />
@@ -40,7 +40,7 @@ const Header = ({ email }: HeaderProps) => {
             >
               Cambiar tema
             </Tooltip.Content>
-          </Tooltip.Root>
+          </Tooltip.Root> */}
           <Tooltip.Root>
             <Tooltip.Trigger asChild>
               <button

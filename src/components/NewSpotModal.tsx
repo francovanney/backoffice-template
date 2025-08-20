@@ -100,7 +100,7 @@ export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
 
       await createSpotMutation.mutateAsync(formData);
 
-      toast.success("Spot creado exitosamente");
+      toast.success(`Negocio ${data.nombre} creado exitosamente`);
       queryClient.invalidateQueries({ queryKey: [SPOTS_KEY] });
       close();
     } catch (error) {
@@ -214,6 +214,13 @@ export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
                         <p className="text-sm text-gray-500">
                           Archivo seleccionado: {file.name}
                         </p>
+                        <div className="mt-2 relative w-full h-32 border rounded-md overflow-hidden">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt="Vista previa"
+                            className="object-contain w-full h-full"
+                          />
+                        </div>
                       </div>
                     )}
                     {logoError && (

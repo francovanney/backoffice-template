@@ -79,7 +79,7 @@ const EditSectionModal = ({
                 type="text"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                placeholder="Ej: Ropa, Calzado, etc."
+                placeholder="Ej: Bares, Kioskos..."
                 required
               />
             </div>

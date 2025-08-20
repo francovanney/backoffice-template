@@ -9,6 +9,7 @@ export function Dialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
   children: React.ReactNode;
+  closeOnOverlayClick?: boolean;
 }) {
   return open ? (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -31,7 +32,7 @@ export function DialogContent({
   return (
     <div
       className={cn(
-        "bg-white rounded-lg shadow-lg w-full max-w-2xl mx-auto min-h-[220px] flex flex-col items-center justify-center relative px-10 pt-10 pb-24",
+        "bg-white rounded-lg shadow-lg w-full min-w-[360px] mx-auto min-h-[360px] flex flex-col items-center justify-center",
         contentClassName
       )}
     >
@@ -41,7 +42,7 @@ export function DialogContent({
 }
 
 export function DialogHeader({ children }: { children: React.ReactNode }) {
-  return <div className="mb-4">{children}</div>;
+  return <div className="flex w-full justify-center mb-4">{children}</div>;
 }
 
 export function DialogFooter({

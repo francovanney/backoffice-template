@@ -54,20 +54,23 @@ const NewSectionModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent contentClassName="sm:max-w-lg p-6">
+      <DialogContent contentClassName="p-12">
         <DialogHeader>
-          <DialogTitle>Nueva Sub-Categoría en {sectionParent}</DialogTitle>
+          <DialogTitle>
+            Nueva Sub-Categoría en:{" "}
+            {sectionParent.charAt(0).toUpperCase() + sectionParent.slice(1)}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="pt-4">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-12">
             <div>
               <FormInput
                 label="Nombre de la sección"
                 type="text"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                placeholder="Ej: Ropa, Calzado, etc."
+                placeholder="Ej: Bares, Kioskos..."
                 required
               />
             </div>

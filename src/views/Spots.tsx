@@ -381,7 +381,7 @@ const Spots = () => {
                 <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-3">
                   <span>{seccion.nombre}</span>
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    {getSpotCountForSection(seccion.id)} comercios
+                    {getSpotCountForSection(seccion.id)}
                   </span>
                   <span className="text-sm text-gray-400 font-normal">
                     (ID: {seccion.id})
