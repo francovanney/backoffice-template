@@ -242,7 +242,7 @@ const Spots = () => {
         </Breadcrumb>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">
-            Sub-Categoría de{" "}
+            Sub-Categorías de{" "}
             {selectedSectionType.charAt(0).toUpperCase() +
               selectedSectionType.slice(1)}
           </h2>
@@ -299,7 +299,7 @@ const Spots = () => {
         </Breadcrumb>
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold">
-            Sub-Categoría de{" "}
+            Sub-Categorías de{" "}
             {selectedSectionType.charAt(0).toUpperCase() +
               selectedSectionType.slice(1)}
           </h2>
@@ -344,7 +344,7 @@ const Spots = () => {
       </Breadcrumb>
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold">
-          Sub-Categoría de{" "}
+          Sub-Categorías de{" "}
           {selectedSectionType.charAt(0).toUpperCase() +
             selectedSectionType.slice(1)}
         </h2>
