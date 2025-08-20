@@ -45,7 +45,8 @@ const Filter = ({ search, setSearch }: FilterProps) => {
         type="button"
         size={"default"}
       >
-        <Plus size={16} /> Agregar Evento
+        <Plus size={16} />
+        <span className="hidden lg:inline">Agregar Evento</span>
       </Button>
     </div>
   );

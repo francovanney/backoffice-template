@@ -26,7 +26,7 @@ const Header = ({ email, menuOpen, setMenuOpen }: HeaderProps) => {
       <header className="w-full py-4 px-6 bg-background border-b flex items-center justify-between relative">
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="md:hidden p-2 -ml-2 z-10"
+          className="md:hidden p-2 -ml-2 z-10 flex items-center justify-center"
         >
           <PanelLeftOpen className="h-6 w-6" />
         </button>
@@ -39,7 +39,7 @@ const Header = ({ email, menuOpen, setMenuOpen }: HeaderProps) => {
         </div>
 
         <div className="flex items-center gap-4 md:gap-8 ml-auto md:ml-0 z-10">
-          <span className="hidden md:inline">
+          <span className="hidden md:inline-flex items-center">
             Bienvenido: {email ? email.split("@")[0] : ""}
           </span>
           {/*           <Tooltip.Root>
@@ -61,10 +61,10 @@ const Header = ({ email, menuOpen, setMenuOpen }: HeaderProps) => {
               <button
                 type="button"
                 aria-label="Cerrar sesión"
-                className="hover:text-red-500 transition"
+                className="hover:text-red-500 transition flex items-center justify-center h-6 w-6"
                 onClick={() => setShowLogoutModal(true)}
               >
-                <LogOut />
+                <LogOut className="h-6 w-6" />
               </button>
             </Tooltip.Trigger>
             <Tooltip.Content

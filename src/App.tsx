@@ -126,12 +126,12 @@ const App = () => {
                       />
                     )}
 
-                    <div className="flex-1 h-full overflow-hidden flex flex-col md:ml-64">
+                    <div className="flex-1 h-full flex flex-col md:ml-64">
                       <ConditionalFilter
                         search={search}
                         setSearch={setSearch}
                       />
-                      <div className="flex-1 overflow-hidden">
+                      <div className="flex-1 overflow-auto">
                         <GlobalLayout>
                           <AppRouter search={debouncedSearch} />
                         </GlobalLayout>

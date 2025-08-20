@@ -114,7 +114,7 @@ const EventsTable = ({ search }: EventsTableProps) => {
 
   if (isLoading) {
     return (
-      <div className="w-full h-full flex flex-col">
+      <div className="w-full h-full flex flex-col overflow-hidden">
         <div className="flex-shrink-0 bg-white border-b shadow-sm">
           <Table>
             <TableHeader>
@@ -157,7 +157,7 @@ const EventsTable = ({ search }: EventsTableProps) => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="w-full h-full flex flex-col overflow-hidden">
       <div className="flex-shrink-0 bg-white border-b shadow-sm">
         <Table>
           <TableHeader>
