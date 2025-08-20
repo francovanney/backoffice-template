@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import Filter from "./Filter";
+import Filter from "./FilterComponent";
 
 interface ConditionalFilterProps {
   search: string;

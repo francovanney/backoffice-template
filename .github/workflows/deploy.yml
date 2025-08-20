@@ -41,7 +41,8 @@ jobs:
           # Verificar nombres de archivos
           find src -type f -name "*.tsx" -o -name "*.ts" | sort
           # Corregir importación en App.tsx
-          sed -i 's/import Filter from ".\/components\/Filter";/import Filter from ".\/components\/filter";/g' src/App.tsx
+          # Ajuste para sistemas sensibles a mayúsculas/minúsculas
+          sed -i 's/import Filter from ".\/components\/Filter";/import Filter from ".\/components\/FilterComponent";/g' src/App.tsx
           # Intentar build
           npm run build
 
