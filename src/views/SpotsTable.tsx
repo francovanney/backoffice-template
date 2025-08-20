@@ -370,8 +370,7 @@ const SpotsTable = ({
       <div className="flex-shrink-0 p-4 border-t bg-white">
         <div className="relative flex items-center justify-center">
           <div className="absolute left-0 text-xs text-muted-foreground">
-            Mostrando {(currentPage - 1) * pageSize + 1} a{" "}
-            {Math.min(currentPage * pageSize, total)} de {total} resultados
+            Mostrando {total} resultado{total !== 1 ? "s" : ""}
           </div>
 
           {showPagination && (
