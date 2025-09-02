@@ -22,7 +22,6 @@ import LogoPampa from "@/assets/logoPampa.svg";
 interface CombinedFormData extends ConfigFormData, SettingsFormData {}
 
 const combinedSchema = yup.object().shape({
-  // Settings fields
   title: yup.string().required("El título es requerido"),
   description: yup.string().required("La descripción es requerida"),
   email: yup
@@ -31,7 +30,6 @@ const combinedSchema = yup.object().shape({
     .required("El email es requerido"),
   instagram: yup.string().required("El Instagram es requerido"),
   telephone: yup.string().required("El teléfono es requerido"),
-  // Colors field
   color: yup
     .string()
     .matches(
@@ -74,23 +72,56 @@ const Config = () => {
     },
   });
 
+  const [originalValues, setOriginalValues] = useState<CombinedFormData>({
+    color: DEFAULT_COLOR,
+    title: "",
+    description: "",
+    email: "",
+    instagram: "",
+    telephone: "",
+  });
+
   useEffect(() => {
     if (colorsData?.primary) {
       setValue("color", colorsData.primary);
+      setOriginalValues((prev) => ({ ...prev, color: colorsData.primary }));
     }
   }, [colorsData?.primary, setValue]);
 
   useEffect(() => {
     if (settingsData) {
-      setValue("title", settingsData.title);
-      setValue("description", settingsData.description);
-      setValue("email", settingsData.email);
-      setValue("instagram", settingsData.instagram);
-      setValue("telephone", settingsData.telephone);
+      const newValues = {
+        title: settingsData.title,
+        description: settingsData.description,
+        email: settingsData.email,
+        instagram: settingsData.instagram,
+        telephone: settingsData.telephone,
+      };
+
+      setValue("title", newValues.title);
+      setValue("description", newValues.description);
+      setValue("email", newValues.email);
+      setValue("instagram", newValues.instagram);
+      setValue("telephone", newValues.telephone);
+
+      setOriginalValues((prev) => ({ ...prev, ...newValues }));
     }
   }, [settingsData, setValue]);
 
   const watchedColor = watch("color");
+
+  const watchedValues = watch();
+
+  const hasChanges = useMemo(() => {
+    return (
+      watchedValues.color !== originalValues.color ||
+      watchedValues.title !== originalValues.title ||
+      watchedValues.description !== originalValues.description ||
+      watchedValues.email !== originalValues.email ||
+      watchedValues.instagram !== originalValues.instagram ||
+      watchedValues.telephone !== originalValues.telephone
+    );
+  }, [watchedValues, originalValues]);
 
   const onSubmit = (data: CombinedFormData) => {
     const colorPromise = updateColorsMutation.mutateAsync({
@@ -136,6 +167,16 @@ const Config = () => {
             };
           }
           return oldData;
+        });
+
+        // Actualizar valores originales después del éxito
+        setOriginalValues({
+          color: data.color,
+          title: data.title,
+          description: data.description,
+          email: data.email,
+          instagram: data.instagram,
+          telephone: data.telephone,
         });
 
         toast.success("Configuración actualizada exitosamente");
@@ -578,6 +619,7 @@ const Config = () => {
                   type="submit"
                   className="w-full sm:w-auto"
                   disabled={
+                    !hasChanges ||
                     updateColorsMutation.isPending ||
                     updateSettingsMutation.isPending ||
                     isLoading ||
