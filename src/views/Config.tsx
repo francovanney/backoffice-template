@@ -647,7 +647,7 @@ const Config = () => {
                         <ChevronRight className="h-4 w-4 text-gray-500" />
                       )}
                       <h2 className="text-xl font-semibold text-gray-900">
-                        Títulos
+                        Información General
                       </h2>
                     </button>
                   </div>
@@ -670,7 +670,7 @@ const Config = () => {
                             render={({ field }) => (
                               <FormInput
                                 {...field}
-                                placeholder="Ingrese el título"
+                                placeholder="Ingrese el título de la app"
                                 className="w-full"
                               />
                             )}
@@ -692,7 +692,7 @@ const Config = () => {
                             render={({ field }) => (
                               <FormInput
                                 {...field}
-                                placeholder="Ingrese la descripción"
+                                placeholder="Ingrese la descripción de la app"
                                 className="w-full"
                               />
                             )}
@@ -715,7 +715,7 @@ const Config = () => {
                               <FormInput
                                 {...field}
                                 type="email"
-                                placeholder="Ingrese el email"
+                                placeholder="Ingrese el email de contacto personal"
                                 className="w-full"
                               />
                             )}
@@ -737,7 +737,8 @@ const Config = () => {
                             render={({ field }) => (
                               <FormInput
                                 {...field}
-                                placeholder="Ingrese el Instagram"
+                                placeholder="usuario123"
+                                span="https://instagram.com/"
                                 className="w-full"
                               />
                             )}
@@ -759,7 +760,7 @@ const Config = () => {
                             render={({ field }) => (
                               <FormInput
                                 {...field}
-                                placeholder="Ingrese el teléfono"
+                                placeholder="Ingrese el teléfono de contacto"
                                 className="w-full"
                               />
                             )}
