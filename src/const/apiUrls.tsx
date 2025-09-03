@@ -14,3 +14,4 @@ export const API_COMERCIOS_UPDATE_URL = `${API_URL}/lugares/`;
 export const API_COMERCIOS_DELETE_URL = `${API_URL}/lugares/`;
 export const API_COLORS = `${API_URL}/colors`;
 export const API_SETTINGS = `${API_URL}/settings`;
+export const API_BRANDING = `${API_URL}/branding`;

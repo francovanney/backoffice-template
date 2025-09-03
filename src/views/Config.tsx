@@ -1,11 +1,12 @@
-import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { SliderPicker } from "react-color";
-import { ChevronDown, ChevronUp, ChevronRight, Upload, X } from "lucide-react";
+import { ChevronDown, ChevronUp, ChevronRight, X } from "lucide-react";
+import { FileUploader } from "react-drag-drop-files";
 
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/ui/form-input";
@@ -14,9 +15,11 @@ import { useColorsQuery } from "@/services/useColorsQuery";
 import { useUpdateColorsMutation } from "@/services/useUpdateColorsMutation";
 import { useSettingsQuery } from "@/services/useSettingsQuery";
 import { useUpdateSettingsMutation } from "@/services/useUpdateSettingsMutation";
+import { useBrandingQuery } from "@/services/useBrandingQuery";
+import { useUpdateBrandingMutation } from "@/services/useUpdateBrandingMutation";
 import { ConfigFormData } from "@/schemas/colorSchema";
 import { SettingsFormData } from "@/schemas/settingsSchema";
-import { COLORS_KEY, SETTINGS_KEY } from "@/const/queryKeys";
+import { COLORS_KEY, SETTINGS_KEY, BRANDING_KEY } from "@/const/queryKeys";
 import LogoPampa from "@/assets/logoPampa.svg";
 
 interface CombinedFormData extends ConfigFormData, SettingsFormData {}
@@ -41,15 +44,20 @@ const combinedSchema = yup.object().shape({
 
 const Config = () => {
   const [showManualInput, setShowManualInput] = useState(false);
-  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [iconFile, setIconFile] = useState<File | null>(null);
   const [isAparienciaOpen, setIsAparienciaOpen] = useState(true);
   const [isTitulosOpen, setIsTitulosOpen] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const fileTypes = ["JPG", "JPEG", "PNG"];
   const { data: colorsData, isLoading } = useColorsQuery();
   const { data: settingsData, isLoading: isSettingsLoading } =
     useSettingsQuery();
+  const { data: brandingData, isLoading: isBrandingLoading } =
+    useBrandingQuery();
   const updateColorsMutation = useUpdateColorsMutation();
   const updateSettingsMutation = useUpdateSettingsMutation();
+  const updateBrandingMutation = useUpdateBrandingMutation();
   const queryClient = useQueryClient();
 
   const DEFAULT_COLOR = "#e6c3b3";
@@ -113,15 +121,19 @@ const Config = () => {
   const watchedValues = watch();
 
   const hasChanges = useMemo(() => {
+    const hasNewFiles =
+      logoFile !== null || bannerFile !== null || iconFile !== null;
+
     return (
       watchedValues.color !== originalValues.color ||
       watchedValues.title !== originalValues.title ||
       watchedValues.description !== originalValues.description ||
       watchedValues.email !== originalValues.email ||
       watchedValues.instagram !== originalValues.instagram ||
-      watchedValues.telephone !== originalValues.telephone
+      watchedValues.telephone !== originalValues.telephone ||
+      hasNewFiles
     );
-  }, [watchedValues, originalValues]);
+  }, [watchedValues, originalValues, logoFile, bannerFile, iconFile]);
 
   const onSubmit = (data: CombinedFormData) => {
     const colorPromise = updateColorsMutation.mutateAsync({
@@ -130,46 +142,43 @@ const Config = () => {
       },
     });
 
+    const settingsData = {
+      title: data.title,
+      description: data.description,
+      email: data.email,
+      instagram: data.instagram,
+      telephone: data.telephone,
+    };
+
     const settingsPromise = updateSettingsMutation.mutateAsync({
-      data: {
-        title: data.title,
-        description: data.description,
-        email: data.email,
-        instagram: data.instagram,
-        telephone: data.telephone,
-      },
+      data: settingsData,
     });
 
-    Promise.all([colorPromise, settingsPromise])
+    let brandingPromise = Promise.resolve();
+    if (logoFile || bannerFile || iconFile) {
+      const formData = new FormData();
+
+      if (logoFile) {
+        formData.append("logo", logoFile);
+      }
+      if (bannerFile) {
+        formData.append("banner", bannerFile);
+      }
+      if (iconFile) {
+        formData.append("icon", iconFile);
+      }
+
+      brandingPromise = updateBrandingMutation.mutateAsync({
+        data: formData,
+      });
+    }
+
+    Promise.all([colorPromise, settingsPromise, brandingPromise])
       .then(() => {
         queryClient.invalidateQueries({ queryKey: [COLORS_KEY] });
         queryClient.invalidateQueries({ queryKey: [SETTINGS_KEY] });
+        queryClient.invalidateQueries({ queryKey: [BRANDING_KEY] });
 
-        queryClient.setQueryData([COLORS_KEY], (oldData: unknown) => {
-          if (oldData && typeof oldData === "object") {
-            return {
-              ...oldData,
-              primary: data.color,
-            };
-          }
-          return oldData;
-        });
-
-        queryClient.setQueryData([SETTINGS_KEY], (oldData: unknown) => {
-          if (oldData && typeof oldData === "object") {
-            return {
-              ...oldData,
-              title: data.title,
-              description: data.description,
-              email: data.email,
-              instagram: data.instagram,
-              telephone: data.telephone,
-            };
-          }
-          return oldData;
-        });
-
-        // Actualizar valores originales después del éxito
         setOriginalValues({
           color: data.color,
           title: data.title,
@@ -179,6 +188,10 @@ const Config = () => {
           telephone: data.telephone,
         });
 
+        setLogoFile(null);
+        setBannerFile(null);
+        setIconFile(null);
+
         toast.success("Configuración actualizada exitosamente");
       })
       .catch(() => {
@@ -186,30 +199,52 @@ const Config = () => {
       });
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        alert("Por favor selecciona un archivo de imagen válido");
-        return;
-      }
+  const handleLogoChange = (uploadedFile: File | File[]) => {
+    const singleFile = Array.isArray(uploadedFile)
+      ? uploadedFile[0]
+      : uploadedFile;
 
-      if (file.size > 5 * 1024 * 1024) {
-        alert("El archivo es demasiado grande. Máximo 5MB");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setLogoPreview(result);
-      };
-      reader.readAsDataURL(file);
+    if (singleFile.size > 1048576) {
+      toast.error(
+        "El archivo es demasiado grande. El tamaño máximo permitido es 1MB."
+      );
+      setLogoFile(null);
+    } else {
+      setLogoFile(singleFile);
+      toast.success("Logo cargado correctamente");
     }
   };
 
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
+  const handleBannerChange = (uploadedFile: File | File[]) => {
+    const singleFile = Array.isArray(uploadedFile)
+      ? uploadedFile[0]
+      : uploadedFile;
+
+    if (singleFile.size > 1048576) {
+      toast.error(
+        "El archivo es demasiado grande. El tamaño máximo permitido es 1MB."
+      );
+      setBannerFile(null);
+    } else {
+      setBannerFile(singleFile);
+      toast.success("Banner cargado correctamente");
+    }
+  };
+
+  const handleIconChange = (uploadedFile: File | File[]) => {
+    const singleFile = Array.isArray(uploadedFile)
+      ? uploadedFile[0]
+      : uploadedFile;
+
+    if (singleFile.size > 1048576) {
+      toast.error(
+        "El archivo es demasiado grande. El tamaño máximo permitido es 1MB."
+      );
+      setIconFile(null);
+    } else {
+      setIconFile(singleFile);
+      toast.success("Ícono cargado correctamente");
+    }
   };
 
   const handleColorChange = useCallback(
@@ -240,13 +275,24 @@ const Config = () => {
 
   const previewColor = useMemo(() => watchedColor, [watchedColor]);
 
+  const getDisplayLogo = useCallback(() => {
+    console.log("getDisplayLogo - logoFile:", logoFile);
+    if (logoFile) {
+      return URL.createObjectURL(logoFile);
+    }
+    if (brandingData?.logo_url) {
+      return brandingData.logo_url;
+    }
+    return imgPlaceholder;
+  }, [logoFile, brandingData, imgPlaceholder]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="overflow-x-hidden">
       <main className="mt-5 mx-4 sm:ml-5 max-w-full">
         <div className="w-full max-w-none">
           <h1 className="text-2xl sm:text-3xl font-bold mb-5">Configuración</h1>
 
-          {isLoading || isSettingsLoading ? (
+          {isLoading || isSettingsLoading || isBrandingLoading ? (
             <div className="space-y-4 mt-10">
               <div className="border border-gray-200 rounded-lg">
                 <div className="flex items-center justify-between p-4">
@@ -346,54 +392,16 @@ const Config = () => {
                   </div>
 
                   {isAparienciaOpen && (
-                    <div className="px-4 pb-4 space-y-6">
-                      <div
-                        className="w-full h-16 sm:h-18 flex items-center justify-start px-2 sm:px-0 min-w-0"
-                        style={{ backgroundColor: previewColor }}
-                      >
-                        <div className="flex-shrink-0 bg-transparent mx-1 sm:mr-4 w-24 h-8 flex items-center justify-center bg-white rounded">
-                          <img
-                            src={logoPreview || imgPlaceholder}
-                            alt="Preview"
-                            className="max-w-full max-h-full object-contain ml-4"
-                          />
-                        </div>
-                        <ul className="text-white text-xs sm:text-sm font-semibold flex gap-2 sm:gap-2 md:gap-5 overflow-hidden min-w-0 flex-1 ml-6 lg:ml-2">
-                          <li className="whitespace-nowrap truncate flex-shrink-0">
-                            ¿Donde Salir?
-                          </li>
-                          <li className="whitespace-nowrap truncate flex-shrink-0">
-                            ¿Donde Comer?
-                          </li>
-                        </ul>
-                      </div>
-                      <div className="space-y-3">
-                        <h3 className="text-lg font-medium">Logo</h3>
-                        <img
-                          src={logoPreview || imgPlaceholder}
-                          alt="Preview Logo"
-                          className="sm:w-[150px] mt-2 max-w-full max-h-[60px]"
-                        />
-                        <input
-                          type="file"
-                          ref={fileInputRef}
-                          onChange={handleFileChange}
-                          accept="image/*"
-                          className="hidden"
-                        />
-                        <Button
-                          type="button"
-                          onClick={handleUploadClick}
-                          className="w-full sm:w-auto flex items-center gap-2"
-                        >
-                          <Upload size={16} />
-                          Cargar Logo
-                        </Button>
-                      </div>
-
-                      <div className="space-y-3">
+                    <div className="px-4 pb-4 space-y-6 mb-6">
+                      <span className="text-xs text-gray-600 block">
+                        Personaliza los colores, el logo, banner e ícono que se
+                        mostrarán en tu aplicación. <br /> Puedes ver una
+                        previsualización de los colores y el logo en header en
+                        tiempo real.
+                      </span>
+                      <div className="space-y-3 ">
                         <h3 className="text-lg font-medium">Color Principal</h3>
-                        <div className="w-full overflow-hidden">
+                        <div className="w-full overflow-hidden max-w-2xl">
                           <Controller
                             name="color"
                             control={control}
@@ -470,6 +478,155 @@ const Config = () => {
                             )}
                           </div>
                         </div>
+                        <hr className="my-4 border-gray-300" />
+                      </div>
+                      <div
+                        className="w-full h-16 sm:h-18 flex items-center justify-start px-2 sm:px-0 min-w-0 max-w-2xl"
+                        style={{ backgroundColor: previewColor }}
+                      >
+                        <div className="flex-shrink-0 mx-1 sm:mr-4 w-24 h-8 flex items-center justify-center rounded">
+                          <img
+                            src={getDisplayLogo()}
+                            alt="Preview"
+                            className="max-w-full max-h-full object-contain ml-4"
+                          />
+                        </div>
+                        <ul className="text-white text-xs sm:text-sm font-semibold flex gap-2 sm:gap-2 md:gap-5 overflow-hidden min-w-0 flex-1 ml-6 lg:ml-2">
+                          <li className="whitespace-nowrap truncate flex-shrink-0">
+                            ¿Donde Salir?
+                          </li>
+                          <li className="whitespace-nowrap truncate flex-shrink-0">
+                            ¿Donde Comer?
+                          </li>
+                        </ul>
+                      </div>
+                      <div className="space-y-6">
+                        <div className="space-y-3">
+                          <h3 className="text-lg font-medium">Logo</h3>
+                          <div className="space-y-3">
+                            {logoFile && (
+                              <div className="mt-2">
+                                <p className="text-sm text-gray-500">
+                                  Archivo seleccionado: {logoFile.name}
+                                </p>
+                                <div className="mt-2 relative w-full max-w-[150px] h-[60px] border rounded-md overflow-hidden">
+                                  <img
+                                    src={URL.createObjectURL(logoFile)}
+                                    alt="Vista previa"
+                                    className="object-contain w-full h-full"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                            {!logoFile && brandingData?.logo_url && (
+                              <div className="mt-2">
+                                <div className="mt-2 relative w-full max-w-[150px] h-[60px] border rounded-md overflow-hidden">
+                                  <img
+                                    src={brandingData.logo_url}
+                                    alt="Logo actual"
+                                    className="object-contain w-full h-full"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                            <div className="max-w-[150px]">
+                              <FileUploader
+                                handleChange={handleLogoChange}
+                                name="logo"
+                                types={fileTypes}
+                                multiple={false}
+                                label="Arrastre o suba un logo"
+                                hoverTitle="Arrastre aquí"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <hr className="my-4 border-gray-300" />
+
+                        <div className="space-y-3">
+                          <h3 className="text-lg font-medium">Banner</h3>
+                          <div className="space-y-3">
+                            {bannerFile && (
+                              <div className="mt-2">
+                                <p className="text-sm text-gray-500">
+                                  Archivo seleccionado: {bannerFile.name}
+                                </p>
+                                <div className="mt-2 relative w-full max-w-[300px] h-[120px] border rounded-md overflow-hidden">
+                                  <img
+                                    src={URL.createObjectURL(bannerFile)}
+                                    alt="Vista previa banner"
+                                    className="object-contain w-full h-full"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                            {!bannerFile && brandingData?.banner_url && (
+                              <div className="mt-2">
+                                <div className="mt-2 relative w-full max-w-[300px] h-[120px] border rounded-md overflow-hidden">
+                                  <img
+                                    src={brandingData.banner_url}
+                                    alt="Banner actual"
+                                    className="object-contain w-full h-full"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                            <div className="w-20">
+                              <FileUploader
+                                handleChange={handleBannerChange}
+                                name="banner"
+                                types={fileTypes}
+                                multiple={false}
+                                label="Arrastre o suba un banner"
+                                hoverTitle="Arrastre aquí"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <hr className="my-4 border-gray-300" />
+
+                        <div className="space-y-3 ">
+                          <h3 className="text-lg font-medium">Ícono</h3>
+                          <div className="space-y-3">
+                            {iconFile && (
+                              <div className="mt-2">
+                                <p className="text-sm text-gray-500">
+                                  Archivo seleccionado: {iconFile.name}
+                                </p>
+                                <div className="mt-2 relative w-full max-w-[60px] h-[60px] border rounded-md overflow-hidden">
+                                  <img
+                                    src={URL.createObjectURL(iconFile)}
+                                    alt="Vista previa ícono"
+                                    className="object-contain w-full h-full"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                            {!iconFile && brandingData?.icon_url && (
+                              <div className="mt-2">
+                                <div className="mt-2 relative w-full max-w-[60px] h-[60px] border rounded-md overflow-hidden">
+                                  <img
+                                    src={brandingData.icon_url}
+                                    alt="Ícono actual"
+                                    className="object-contain w-full h-full"
+                                  />
+                                </div>
+                              </div>
+                            )}
+                            <div className="w-20">
+                              <FileUploader
+                                handleChange={handleIconChange}
+                                name="icon"
+                                types={fileTypes}
+                                multiple={false}
+                                label="Arrastre o suba un ícono"
+                                hoverTitle="Arrastre aquí"
+                              />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -497,6 +654,11 @@ const Config = () => {
 
                   {isTitulosOpen && (
                     <div className="px-4 pb-4 space-y-6">
+                      <span className="text-xs text-gray-600 block">
+                        Configura la información general de tu aplicación que se
+                        utilizará en metadatos, notificaciones y contacto con
+                        usuarios.
+                      </span>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <label className="text-sm font-medium text-gray-700">
@@ -622,12 +784,15 @@ const Config = () => {
                     !hasChanges ||
                     updateColorsMutation.isPending ||
                     updateSettingsMutation.isPending ||
+                    updateBrandingMutation.isPending ||
                     isLoading ||
-                    isSettingsLoading
+                    isSettingsLoading ||
+                    isBrandingLoading
                   }
                 >
                   {updateColorsMutation.isPending ||
-                  updateSettingsMutation.isPending
+                  updateSettingsMutation.isPending ||
+                  updateBrandingMutation.isPending
                     ? "Guardando..."
                     : "Guardar Configuración"}
                 </Button>
