@@ -372,7 +372,11 @@ const EventsTable = ({ search }: EventsTableProps) => {
       </div>
 
       <div className="flex-shrink-0 p-4 border-t bg-white">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-3 md:relative">
+          <div className="text-xs text-muted-foreground text-center md:text-left md:absolute md:left-0 md:top-1/2 md:-translate-y-1/2 hidden md:block">
+            Mostrando {(currentPage - 1) * pageSize + 1} a{" "}
+            {Math.min(currentPage * pageSize, total)} de {total} resultados
+          </div>
           {showPagination && (
             <div className="flex justify-center">
               <Pagination>
@@ -425,10 +429,6 @@ const EventsTable = ({ search }: EventsTableProps) => {
               </Pagination>
             </div>
           )}
-          <div className="text-xs text-muted-foreground text-center md:text-left hidden md:block">
-            Mostrando {(currentPage - 1) * pageSize + 1} a{" "}
-            {Math.min(currentPage * pageSize, total)} de {total} resultados
-          </div>
         </div>
       </div>
     </div>
