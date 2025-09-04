@@ -173,7 +173,7 @@ const EventsTable = ({ search }: EventsTableProps) => {
               <TableHead className="text-center bg-white w-16">
                 Imagen
               </TableHead>
-              <TableHead className="bg-white w-48">Evento</TableHead>
+              <TableHead className="bg-white w-48">Nombre del Evento</TableHead>
               <TableHead className="bg-white w-32 hidden md:table-cell">
                 Categorías
               </TableHead>
@@ -372,60 +372,63 @@ const EventsTable = ({ search }: EventsTableProps) => {
       </div>
 
       <div className="flex-shrink-0 p-4 border-t bg-white">
-        <div className="relative flex items-center justify-center">
-          <div className="absolute left-0 text-xs text-muted-foreground">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          {showPagination && (
+            <div className="flex justify-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (hasPrevious) handlePageChange(currentPage - 1);
+                      }}
+                      className={
+                        !hasPrevious ? "pointer-events-none opacity-50" : ""
+                      }
+                    />
+                  </PaginationItem>
+
+                  {pageNumbers.map((page, index) => (
+                    <PaginationItem key={index}>
+                      {page === "..." ? (
+                        <PaginationEllipsis />
+                      ) : (
+                        <PaginationLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handlePageChange(page as number);
+                          }}
+                          isActive={currentPage === page}
+                        >
+                          {page}
+                        </PaginationLink>
+                      )}
+                    </PaginationItem>
+                  ))}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (hasNext) handlePageChange(currentPage + 1);
+                      }}
+                      className={
+                        !hasNext ? "pointer-events-none opacity-50" : ""
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+          <div className="text-xs text-muted-foreground text-center md:text-left hidden md:block">
             Mostrando {(currentPage - 1) * pageSize + 1} a{" "}
             {Math.min(currentPage * pageSize, total)} de {total} resultados
           </div>
-
-          {showPagination && (
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (hasPrevious) handlePageChange(currentPage - 1);
-                    }}
-                    className={
-                      !hasPrevious ? "pointer-events-none opacity-50" : ""
-                    }
-                  />
-                </PaginationItem>
-
-                {pageNumbers.map((page, index) => (
-                  <PaginationItem key={index}>
-                    {page === "..." ? (
-                      <PaginationEllipsis />
-                    ) : (
-                      <PaginationLink
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handlePageChange(page as number);
-                        }}
-                        isActive={currentPage === page}
-                      >
-                        {page}
-                      </PaginationLink>
-                    )}
-                  </PaginationItem>
-                ))}
-
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (hasNext) handlePageChange(currentPage + 1);
-                    }}
-                    className={!hasNext ? "pointer-events-none opacity-50" : ""}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
-          )}
         </div>
       </div>
     </div>
