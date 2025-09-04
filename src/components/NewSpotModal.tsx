@@ -165,7 +165,7 @@ export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
                 />
 
                 <FormInput
-                  label="Link Dirección"
+                  label="Link Dirección (Enlace)"
                   type="text"
                   register={register("link_direccion", {
                     validate: (value) => {
@@ -252,7 +252,7 @@ export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
                 />
 
                 <FormInput
-                  label="Reservas"
+                  label="Reservas (Enlace)"
                   type="text"
                   register={register("reservas")}
                   error={errors.reservas?.message}
@@ -260,7 +260,7 @@ export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
                 />
 
                 <FormInput
-                  label="Menú"
+                  label="Menú (Enlace)"
                   type="text"
                   register={register("menu")}
                   error={errors.menu?.message}
@@ -268,7 +268,7 @@ export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
                 />
 
                 <FormInput
-                  label="Delivery"
+                  label="Delivery (Enlace)"
                   type="text"
                   register={register("delivery")}
                   error={errors.delivery?.message}
@@ -276,7 +276,7 @@ export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
                 />
 
                 <FormInput
-                  label="Web"
+                  label="Web (Enlace)"
                   type="text"
                   register={register("web", {
                     validate: (value) => {

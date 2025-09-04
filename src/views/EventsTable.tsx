@@ -82,22 +82,22 @@ const EventsTable = ({ search }: EventsTableProps) => {
             <TableCell className="font-medium w-48">
               <div className="h-4 w-24 bg-gray-200/80 rounded animate-pulse" />
             </TableCell>
-            <TableCell className="w-32">
+            <TableCell className="w-32 hidden md:table-cell">
               <div className="h-4 w-20 bg-gray-200/80 rounded animate-pulse" />
             </TableCell>
-            <TableCell className="text-center w-24">
+            <TableCell className="text-center w-24 hidden md:table-cell">
               <div className="h-4 w-16 bg-gray-200/80 rounded animate-pulse mx-auto" />
             </TableCell>
-            <TableCell className="w-32">
+            <TableCell className="w-32 hidden lg:table-cell">
               <div className="h-4 w-20 bg-gray-200/80 rounded animate-pulse" />
             </TableCell>
-            <TableCell className="w-48">
+            <TableCell className="w-48 hidden lg:table-cell">
               <div className="h-4 w-28 bg-gray-200/80 rounded animate-pulse" />
             </TableCell>
-            <TableCell className="text-center w-20">
+            <TableCell className="text-center w-20 hidden lg:table-cell">
               <div className="h-6 w-6 mx-auto bg-gray-200/80 rounded-full animate-pulse" />
             </TableCell>
-            <TableCell className="text-center w-16">
+            <TableCell className="text-center w-16 hidden lg:table-cell">
               <div className="h-6 w-6 mx-auto bg-gray-200/80 rounded-full animate-pulse" />
             </TableCell>
             <TableCell className="text-center w-24">
@@ -123,16 +123,24 @@ const EventsTable = ({ search }: EventsTableProps) => {
                   Imagen
                 </TableHead>
                 <TableHead className="bg-white w-48">Nombre</TableHead>
-                <TableHead className="bg-white w-32">Categorías</TableHead>
-                <TableHead className="text-center bg-white w-24">
+                <TableHead className="bg-white w-32 hidden md:table-cell">
+                  Categorías
+                </TableHead>
+                <TableHead className="text-center bg-white w-24 hidden md:table-cell">
                   Fecha
                 </TableHead>
-                <TableHead className="bg-white w-32">Venue</TableHead>
-                <TableHead className="bg-white w-48">Dirección</TableHead>
-                <TableHead className="text-center bg-white w-20">
+                <TableHead className="bg-white w-32 hidden lg:table-cell">
+                  Venue
+                </TableHead>
+                <TableHead className="bg-white w-48 hidden lg:table-cell">
+                  Dirección
+                </TableHead>
+                <TableHead className="text-center bg-white w-20 hidden lg:table-cell">
                   Instagram
                 </TableHead>
-                <TableHead className="text-center bg-white w-16">Web</TableHead>
+                <TableHead className="text-center bg-white w-16 hidden lg:table-cell">
+                  Web
+                </TableHead>
                 <TableHead className="text-center bg-white w-24">
                   Acciones
                 </TableHead>
@@ -165,15 +173,25 @@ const EventsTable = ({ search }: EventsTableProps) => {
               <TableHead className="text-center bg-white w-16">
                 Imagen
               </TableHead>
-              <TableHead className="bg-white w-48">Evento</TableHead>
-              <TableHead className="bg-white w-32">Categorías</TableHead>
-              <TableHead className="text-center bg-white w-24">Fecha</TableHead>
-              <TableHead className="bg-white w-32">Venue</TableHead>
-              <TableHead className="bg-white w-48">Dirección</TableHead>
-              <TableHead className="text-center bg-white w-20">
+              <TableHead className="bg-white w-48">Nombre del Evento</TableHead>
+              <TableHead className="bg-white w-32 hidden md:table-cell">
+                Categorías
+              </TableHead>
+              <TableHead className="text-center bg-white w-24 hidden md:table-cell">
+                Fecha
+              </TableHead>
+              <TableHead className="bg-white w-32 hidden lg:table-cell">
+                Venue
+              </TableHead>
+              <TableHead className="bg-white w-48 hidden lg:table-cell">
+                Dirección
+              </TableHead>
+              <TableHead className="text-center bg-white w-20 hidden lg:table-cell">
                 Instagram
               </TableHead>
-              <TableHead className="text-center bg-white w-16">Web</TableHead>
+              <TableHead className="text-center bg-white w-16 hidden lg:table-cell">
+                Web
+              </TableHead>
               <TableHead className="text-center bg-white w-24">
                 Acciones
               </TableHead>
@@ -187,14 +205,41 @@ const EventsTable = ({ search }: EventsTableProps) => {
           <TableBody>
             {isError && (
               <TableRow>
-                <TableCell colSpan={9} className="text-center text-destructive">
+                <TableCell
+                  colSpan={3}
+                  className="text-center text-destructive md:hidden"
+                >
+                  Error al cargar los shows
+                </TableCell>
+                <TableCell
+                  colSpan={5}
+                  className="text-center text-destructive hidden md:table-cell lg:hidden"
+                >
+                  Error al cargar los shows
+                </TableCell>
+                <TableCell
+                  colSpan={9}
+                  className="text-center text-destructive hidden lg:table-cell"
+                >
                   Error al cargar los shows
                 </TableCell>
               </TableRow>
             )}
             {shows && shows.length === 0 && (
               <TableRow>
-                <TableCell colSpan={9} className="text-center">
+                <TableCell colSpan={3} className="text-center md:hidden">
+                  No hay shows disponibles
+                </TableCell>
+                <TableCell
+                  colSpan={5}
+                  className="text-center hidden md:table-cell lg:hidden"
+                >
+                  No hay shows disponibles
+                </TableCell>
+                <TableCell
+                  colSpan={9}
+                  className="text-center hidden lg:table-cell"
+                >
                   No hay shows disponibles
                 </TableCell>
               </TableRow>
@@ -223,7 +268,7 @@ const EventsTable = ({ search }: EventsTableProps) => {
                       <span>{show.title}</span>
                     </div>
                   </TableCell>
-                  <TableCell className="w-32">
+                  <TableCell className="w-32 hidden md:table-cell">
                     <div className="flex flex-wrap gap-1">
                       {show.categories?.map((cat: string, idx: number) => (
                         <Badge key={cat + idx} variant="secondary">
@@ -232,14 +277,18 @@ const EventsTable = ({ search }: EventsTableProps) => {
                       ))}
                     </div>
                   </TableCell>
-                  <TableCell className="text-center w-24">
+                  <TableCell className="text-center w-24 hidden md:table-cell">
                     {show.event_date
                       ? format(new Date(show.event_date), "dd/MM/yyyy")
                       : ""}
                   </TableCell>
-                  <TableCell className="w-32">{show.venue}</TableCell>
-                  <TableCell className="w-48">{show.address}</TableCell>
-                  <TableCell className="text-center w-20">
+                  <TableCell className="w-32 hidden lg:table-cell">
+                    {show.venue}
+                  </TableCell>
+                  <TableCell className="w-48 hidden lg:table-cell">
+                    {show.address}
+                  </TableCell>
+                  <TableCell className="text-center w-20 hidden lg:table-cell">
                     {show.instagram ? (
                       <a
                         href={`https://www.instagram.com/${show.instagram}`}
@@ -250,7 +299,7 @@ const EventsTable = ({ search }: EventsTableProps) => {
                       </a>
                     ) : null}
                   </TableCell>
-                  <TableCell className="text-center w-16">
+                  <TableCell className="text-center w-16 hidden lg:table-cell">
                     {show.web ? (
                       <a
                         href={show.web}
@@ -323,59 +372,62 @@ const EventsTable = ({ search }: EventsTableProps) => {
       </div>
 
       <div className="flex-shrink-0 p-4 border-t bg-white">
-        <div className="relative flex items-center justify-center">
-          <div className="absolute left-0 text-xs text-muted-foreground">
+        <div className="flex flex-col gap-3 md:relative">
+          <div className="text-xs text-muted-foreground text-center md:text-left md:absolute md:left-0 md:top-1/2 md:-translate-y-1/2 hidden md:block">
             Mostrando {(currentPage - 1) * pageSize + 1} a{" "}
             {Math.min(currentPage * pageSize, total)} de {total} resultados
           </div>
-
           {showPagination && (
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (hasPrevious) handlePageChange(currentPage - 1);
-                    }}
-                    className={
-                      !hasPrevious ? "pointer-events-none opacity-50" : ""
-                    }
-                  />
-                </PaginationItem>
-
-                {pageNumbers.map((page, index) => (
-                  <PaginationItem key={index}>
-                    {page === "..." ? (
-                      <PaginationEllipsis />
-                    ) : (
-                      <PaginationLink
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handlePageChange(page as number);
-                        }}
-                        isActive={currentPage === page}
-                      >
-                        {page}
-                      </PaginationLink>
-                    )}
+            <div className="flex justify-center">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (hasPrevious) handlePageChange(currentPage - 1);
+                      }}
+                      className={
+                        !hasPrevious ? "pointer-events-none opacity-50" : ""
+                      }
+                    />
                   </PaginationItem>
-                ))}
 
-                <PaginationItem>
-                  <PaginationNext
-                    href="#"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (hasNext) handlePageChange(currentPage + 1);
-                    }}
-                    className={!hasNext ? "pointer-events-none opacity-50" : ""}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+                  {pageNumbers.map((page, index) => (
+                    <PaginationItem key={index}>
+                      {page === "..." ? (
+                        <PaginationEllipsis />
+                      ) : (
+                        <PaginationLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handlePageChange(page as number);
+                          }}
+                          isActive={currentPage === page}
+                        >
+                          {page}
+                        </PaginationLink>
+                      )}
+                    </PaginationItem>
+                  ))}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (hasNext) handlePageChange(currentPage + 1);
+                      }}
+                      className={
+                        !hasNext ? "pointer-events-none opacity-50" : ""
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
           )}
         </div>
       </div>

@@ -168,7 +168,7 @@ export default function EditEventModal({ show }: EditEventModalProps) {
                 id="event-edit-form"
               >
                 <FormInput
-                  label="Evento"
+                  label="Nombre del Evento"
                   type="text"
                   register={register("title")}
                   error={errors.title?.message}
@@ -229,7 +229,7 @@ export default function EditEventModal({ show }: EditEventModalProps) {
                   error={errors.event_date?.message}
                 />
                 <FormInput
-                  label="Venue"
+                  label="Lugar del Evento"
                   type="text"
                   register={register("venue")}
                   error={errors.venue?.message}
