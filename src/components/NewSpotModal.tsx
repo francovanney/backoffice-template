@@ -118,25 +118,21 @@ export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
         }}
         style={{ zIndex: 1 }}
       >
-        <aside
-          className="absolute top-0 right-0 h-full w-full max-w-md bg-background shadow-lg z-50 transition-transform duration-300 pointer-events-auto translate-x-0"
-          style={{ zIndex: 2 }}
-        >
-          <div
-            className="absolute left-0 top-0 h-full w-[0.5px] bg-gray-200 rounded-r"
-            style={{ zIndex: 3 }}
-          />
-          <div className="flex flex-col h-full overflow-y-auto relative">
-            <div className="bg-background px-6 py-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold">Nuevo Comercio</h2>
-              <X
-                className="ml-4 font-bold cursor-pointer"
+        <div className="fixed inset-0 flex items-end md:items-center justify-center p-0 md:p-4 pointer-events-none">
+          <div className="w-full h-full md:h-auto md:max-w-md md:max-h-[90vh] bg-background shadow-lg md:rounded-lg overflow-hidden flex flex-col pointer-events-auto max-w-full">
+            <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0 min-w-0">
+              <h2 className="text-lg font-bold truncate pr-4">
+                Nuevo Comercio
+              </h2>
+              <button
                 onClick={close}
+                className="p-2 hover:bg-gray-100 rounded-md transition-colors flex-shrink-0"
                 aria-label="Cerrar"
-              />
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
-            <hr className=" border-t border-gray-200" />
-            <div className="p-6 pt-4">
+            <div className="flex-1 overflow-y-auto p-4 max-w-full min-w-0">
               <form
                 className="space-y-4"
                 onSubmit={handleSubmit(onSubmit)}
@@ -311,7 +307,7 @@ export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
               </form>
             </div>
           </div>
-        </aside>
+        </div>
       </div>
     </div>
   );

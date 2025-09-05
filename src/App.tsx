@@ -116,7 +116,7 @@ const App = () => {
                       setMenuOpen={setMenuOpen}
                     />
                   </div>
-                  <main className="w-full h-screen pt-16 overflow-hidden flex">
+                  <main className="w-full h-[100dvh] pt-16 overflow-hidden flex">
                     <LeftMenu menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
 
                     {menuOpen && (

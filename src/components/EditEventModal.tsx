@@ -140,7 +140,7 @@ export default function EditEventModal({ show }: EditEventModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 transition-all duration-300">
+    <div className="fixed inset-0 z-50 transition-all duration-300 overflow-hidden">
       <div
         className="absolute inset-0 bg-black/40 transition-opacity duration-300 opacity-100"
         onClick={(e) => {
@@ -152,7 +152,7 @@ export default function EditEventModal({ show }: EditEventModalProps) {
           className="absolute top-0 right-0 h-full w-full max-w-md bg-background shadow-lg z-50 transition-transform duration-300 pointer-events-auto translate-x-0"
           style={{ zIndex: 2 }}
         >
-          <div className="flex flex-col h-full overflow-y-auto">
+          <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden">
             <div className="bg-background px-6 py-4 flex items-center justify-between">
               <h2 className="text-lg font-bold">Editar evento</h2>
               <X
@@ -161,9 +161,9 @@ export default function EditEventModal({ show }: EditEventModalProps) {
                 aria-label="Cerrar"
               />
             </div>
-            <div className="p-6 pt-4">
+            <div className="p-6 pt-4 max-w-full min-w-0 overflow-x-hidden flex-1">
               <form
-                className="space-y-4"
+                className="space-y-4 w-full max-w-full min-w-0"
                 onSubmit={handleSubmit(onSubmit)}
                 id="event-edit-form"
               >
@@ -192,32 +192,34 @@ export default function EditEventModal({ show }: EditEventModalProps) {
                       ];
 
                       return (
-                        <Select
-                          isMulti
-                          options={options}
-                          value={options.filter((opt) =>
-                            field.value?.includes(opt.value)
-                          )}
-                          onChange={(selected) => {
-                            const values = Array.isArray(selected)
-                              ? selected.map((opt) => opt.value)
-                              : [];
-                            if (values.length < 3) {
-                              field.onChange(values);
-                              setMenuIsOpen(true);
-                            } else if (values.length === 3) {
-                              field.onChange(values);
-                              setMenuIsOpen(false);
-                            } else {
-                              toast.error("Máximo 3 categorías permitidas");
-                            }
-                          }}
-                          placeholder="Selecciona hasta 3 categorías"
-                          closeMenuOnSelect={false}
-                          menuIsOpen={menuIsOpen}
-                          onMenuOpen={() => setMenuIsOpen(true)}
-                          onMenuClose={() => setMenuIsOpen(false)}
-                        />
+                        <div className="w-full max-w-full min-w-0 overflow-hidden">
+                          <Select
+                            isMulti
+                            options={options}
+                            value={options.filter((opt) =>
+                              field.value?.includes(opt.value)
+                            )}
+                            onChange={(selected) => {
+                              const values = Array.isArray(selected)
+                                ? selected.map((opt) => opt.value)
+                                : [];
+                              if (values.length < 3) {
+                                field.onChange(values);
+                                setMenuIsOpen(true);
+                              } else if (values.length === 3) {
+                                field.onChange(values);
+                                setMenuIsOpen(false);
+                              } else {
+                                toast.error("Máximo 3 categorías permitidas");
+                              }
+                            }}
+                            placeholder="Selecciona hasta 3 categorías"
+                            closeMenuOnSelect={false}
+                            menuIsOpen={menuIsOpen}
+                            onMenuOpen={() => setMenuIsOpen(true)}
+                            onMenuClose={() => setMenuIsOpen(false)}
+                          />
+                        </div>
                       );
                     }}
                   />
