@@ -27,7 +27,6 @@ export default function NewEventModal({ event }: NewEventModalProps) {
   const { close } = useModal();
   const fileTypes = ["JPG", "JPEG", "PNG"];
   const [file, setFile] = useState<File | null>(null);
-  const [menuIsOpen, setMenuIsOpen] = useState(false);
   const {
     register,
     handleSubmit,
@@ -40,7 +39,7 @@ export default function NewEventModal({ event }: NewEventModalProps) {
     defaultValues: event
       ? {
           title: event.title,
-          categories: event.categories,
+          categories: event.categories || [],
           event_date: event.event_date ? event.event_date.split("T")[0] : "",
           venue: event.venue,
           city: event.city || "",
@@ -52,6 +51,7 @@ export default function NewEventModal({ event }: NewEventModalProps) {
         }
       : {
           is_featured: false,
+          categories: [],
         },
   });
 
@@ -78,7 +78,7 @@ export default function NewEventModal({ event }: NewEventModalProps) {
 
   type EventFormData = {
     title: string;
-    categories: (string | undefined)[];
+    categories?: (string | undefined)[];
     event_date: string;
     venue: string;
     city?: string;
@@ -133,218 +133,229 @@ export default function NewEventModal({ event }: NewEventModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div className="fixed inset-0 z-50 transition-all duration-300 overflow-hidden">
       <div
-        className="absolute inset-0 bg-black/40 transition-opacity duration-300"
+        className="absolute inset-0 bg-black/40 transition-opacity duration-300 opacity-100"
         onClick={(e) => {
           if (e.target === e.currentTarget) close();
         }}
-      />
-      <div className="fixed inset-0 flex items-end md:items-center justify-center p-0 md:p-4 pointer-events-none">
-        <div className="w-full h-full md:h-auto md:max-w-md md:max-h-[90vh] bg-background shadow-lg md:rounded-lg overflow-hidden flex flex-col pointer-events-auto max-w-full">
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0 min-w-0">
-            <h2 className="text-lg font-bold truncate pr-4">Nuevo Evento</h2>
-            <button
-              onClick={close}
-              className="p-2 hover:bg-gray-100 rounded-md transition-colors flex-shrink-0"
-              aria-label="Cerrar"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto p-4 max-w-full min-w-0">
-            <form
-              className="space-y-4 w-full max-w-full min-w-0"
-              onSubmit={handleSubmit(onSubmit)}
-              id="event-form"
-            >
-              <FormInput
-                label="Nombre del Evento"
-                type="text"
-                register={register("title")}
-                error={errors.title?.message}
+        style={{ zIndex: 1 }}
+      >
+        <aside
+          className="absolute top-0 right-0 h-full w-full max-w-md bg-background shadow-lg z-50 transition-transform duration-300 pointer-events-auto translate-x-0"
+          style={{ zIndex: 2 }}
+        >
+          <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden">
+            <div className="bg-background px-6 py-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold">Nuevo Evento</h2>
+              <X
+                className="ml-4 font-bold cursor-pointer"
+                onClick={close}
+                aria-label="Cerrar"
               />
+            </div>
+            <div className="p-6 pt-4 max-w-full min-w-0 overflow-x-hidden flex-1">
+              <form
+                className="space-y-4 w-full max-w-full min-w-0"
+                onSubmit={handleSubmit(onSubmit)}
+                id="event-form"
+              >
+                <FormInput
+                  label="Nombre del Evento"
+                  type="text"
+                  register={register("title")}
+                  error={errors.title?.message}
+                />
 
-              <FormInput label="Categorías" error={errors.categories?.message}>
-                <div className="w-full overflow-hidden">
-                  <Controller
-                    name="categories"
-                    control={control}
-                    render={({ field }) => {
-                      const options = [
-                        { value: "Teatro", label: "Teatro" },
-                        { value: "Música", label: "Música" },
-                        { value: "Evento", label: "Evento" },
-                        { value: "Gastronomía", label: "Gastronomía" },
-                        { value: "Aire Libre", label: "Aire Libre" },
-                        { value: "Gratis", label: "Gratis" },
-                        { value: "Feria", label: "Feria" },
-                      ];
-
-                      return (
-                        <Select
-                          isMulti
-                          options={options}
-                          value={options.filter((opt) =>
-                            field.value?.includes(opt.value)
-                          )}
-                          onChange={(selected) => {
-                            const values = Array.isArray(selected)
-                              ? selected.map((opt) => opt.value)
-                              : [];
-                            if (values.length < 3) {
-                              field.onChange(values);
-                              setMenuIsOpen(true);
-                            } else if (values.length === 3) {
-                              field.onChange(values);
-                              setMenuIsOpen(false);
-                            } else {
-                              toast.error("Máximo 3 categorías permitidas");
-                            }
-                          }}
-                          placeholder="Selecciona hasta 3 categorías"
-                          closeMenuOnSelect={false}
-                          menuIsOpen={menuIsOpen}
-                          onMenuOpen={() => setMenuIsOpen(true)}
-                          onMenuClose={() => setMenuIsOpen(false)}
-                          className="w-full"
-                          classNamePrefix="react-select"
-                        />
-                      );
-                    }}
-                  />
-                </div>
-              </FormInput>
-              <FormInput
-                label="Fecha"
-                type="date"
-                register={register("event_date")}
-                error={errors.event_date?.message}
-                className="max-w-full min-w-0 w-full"
-                style={{
-                  maxWidth: "100%",
-                  width: "100%",
-                  minWidth: "0",
-                  boxSizing: "border-box",
-                  overflow: "hidden",
-                }}
-              />
-              <FormInput
-                label="Lugar del Evento"
-                type="text"
-                register={register("venue")}
-                error={errors.venue?.message}
-              />
-              <FormInput
-                label="Ciudad"
-                type="text"
-                register={register("city")}
-              />
-              <FormInput
-                label="Dirección"
-                type="text"
-                placeholder="Dirección"
-                register={register("address")}
-              />
-              <FormInput
-                label="Instagram"
-                type="text"
-                register={register("instagram")}
-                placeholder="usuario"
-                span="https://instagram.com/"
-              />
-              <FormInput label="Web" type="text" register={register("web")} />
-
-              <div className="space-y-2 w-full">
-                <label className="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                  Evento Destacado
-                </label>
-                <div className="flex items-center space-x-2">
-                  <Controller
-                    name="is_featured"
-                    control={control}
-                    render={({ field }) => (
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
-                        id="is_featured"
-                      />
-                    )}
-                  />
-                  <label
-                    htmlFor="is_featured"
-                    className="text-sm font-medium cursor-pointer"
-                  >
-                    Marcar como evento destacado
-                  </label>
-                </div>
-              </div>
-
-              <FormInput label="Imagen" error={errors.image_url?.message}>
-                <div className="space-y-3 w-full min-w-0 overflow-hidden">
+                <FormInput
+                  label="Categorías"
+                  error={errors.categories?.message}
+                >
                   <div className="w-full">
-                    <FileUploader
-                      handleChange={handleChange}
-                      name="image"
-                      types={fileTypes}
-                      multiple={false}
-                      label="Arrastre o suba una imagen"
-                      hoverTitle="Arrastre aquí"
+                    <Controller
+                      name="categories"
+                      control={control}
+                      render={({ field }) => {
+                        const options = [
+                          { value: "Teatro", label: "Teatro" },
+                          { value: "Música", label: "Música" },
+                          { value: "Evento", label: "Evento" },
+                          { value: "Gastronomía", label: "Gastronomía" },
+                          { value: "Aire Libre", label: "Aire Libre" },
+                          { value: "Gratis", label: "Gratis" },
+                          { value: "Feria", label: "Feria" },
+                        ];
+
+                        return (
+                          <Select
+                            isMulti
+                            options={options}
+                            value={options.filter((opt) =>
+                              field.value?.includes(opt.value)
+                            )}
+                            onChange={(selected) => {
+                              const values = Array.isArray(selected)
+                                ? selected.map((opt) => opt.value)
+                                : [];
+                              if (values.length <= 3) {
+                                field.onChange(values);
+                              } else {
+                                toast.error("Máximo 3 categorías permitidas");
+                              }
+                            }}
+                            placeholder="Selecciona hasta 3 categorías"
+                            closeMenuOnSelect={false}
+                            className="w-full"
+                            classNamePrefix="react-select"
+                            isSearchable={true}
+                            isClearable={true}
+                            menuPortalTarget={document.body}
+                            menuPosition="absolute"
+                            menuPlacement="auto"
+                            styles={{
+                              menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                              menu: (base) => ({
+                                ...base,
+                                zIndex: 9999,
+                              }),
+                            }}
+                          />
+                        );
+                      }}
                     />
                   </div>
-                  {file && (
-                    <div className="mt-2 w-full min-w-0">
-                      <p className="text-sm text-gray-500 break-all">
-                        Archivo seleccionado: {file.name}
-                      </p>
-                      <div className="mt-2 relative w-full h-32 border rounded-md overflow-hidden">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt="Vista previa"
-                          className="object-contain w-full h-full"
+                </FormInput>
+                <FormInput
+                  label="Fecha"
+                  type="date"
+                  register={register("event_date")}
+                  error={errors.event_date?.message}
+                  className="max-w-full min-w-0 w-full"
+                  style={{
+                    maxWidth: "100%",
+                    width: "100%",
+                    minWidth: "0",
+                    boxSizing: "border-box",
+                    overflow: "hidden",
+                  }}
+                />
+                <FormInput
+                  label="Lugar del Evento"
+                  type="text"
+                  register={register("venue")}
+                  error={errors.venue?.message}
+                />
+                <FormInput
+                  label="Ciudad"
+                  type="text"
+                  register={register("city")}
+                />
+                <FormInput
+                  label="Dirección"
+                  type="text"
+                  placeholder="Dirección"
+                  register={register("address")}
+                />
+                <FormInput
+                  label="Instagram"
+                  type="text"
+                  register={register("instagram")}
+                  placeholder="usuario"
+                  span="https://instagram.com/"
+                />
+                <FormInput label="Web" type="text" register={register("web")} />
+
+                <div className="space-y-2 w-full">
+                  <label className="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                    Evento Destacado
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <Controller
+                      name="is_featured"
+                      control={control}
+                      render={({ field }) => (
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          id="is_featured"
                         />
-                      </div>
-                    </div>
-                  )}
-                  {!file && event?.image_url && (
-                    <div className="mt-2 w-full min-w-0">
-                      <p className="text-sm text-gray-500">Imagen actual:</p>
-                      <div className="mt-2 relative w-full h-32 border rounded-md overflow-hidden">
-                        <img
-                          src={event.image_url}
-                          alt="Imagen actual"
-                          className="object-contain w-full h-full"
-                        />
-                      </div>
-                    </div>
-                  )}
+                      )}
+                    />
+                    <label
+                      htmlFor="is_featured"
+                      className="text-sm font-medium cursor-pointer"
+                    >
+                      Marcar como evento destacado
+                    </label>
+                  </div>
                 </div>
-              </FormInput>
-              <FormInput
-                label="URL Ticket"
-                type="text"
-                register={register("url")}
-              />
-              <div className="flex justify-end pt-2 w-full">
-                <Button
-                  className="w-full mt-2"
-                  type="submit"
-                  disabled={createShowMutation.isPending}
-                >
-                  {createShowMutation.isPending ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="flex">
-                        <Spinner />
-                      </span>
+
+                <FormInput label="Imagen" error={errors.image_url?.message}>
+                  <div className="space-y-3 w-full min-w-0 overflow-hidden">
+                    <div className="w-full">
+                      <FileUploader
+                        handleChange={handleChange}
+                        name="image"
+                        types={fileTypes}
+                        multiple={false}
+                        label="Arrastre o suba una imagen"
+                        hoverTitle="Arrastre aquí"
+                      />
                     </div>
-                  ) : (
-                    "Agregar"
-                  )}
-                </Button>
-              </div>
-            </form>
+                    {file && (
+                      <div className="mt-2 w-full min-w-0">
+                        <p className="text-sm text-gray-500 break-all">
+                          Archivo seleccionado: {file.name}
+                        </p>
+                        <div className="mt-2 relative w-full h-32 border rounded-md overflow-hidden">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt="Vista previa"
+                            className="object-contain w-full h-full"
+                          />
+                        </div>
+                      </div>
+                    )}
+                    {!file && event?.image_url && (
+                      <div className="mt-2 w-full min-w-0">
+                        <p className="text-sm text-gray-500">Imagen actual:</p>
+                        <div className="mt-2 relative w-full h-32 border rounded-md overflow-hidden">
+                          <img
+                            src={event.image_url}
+                            alt="Imagen actual"
+                            className="object-contain w-full h-full"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </FormInput>
+                <FormInput
+                  label="URL Ticket"
+                  type="text"
+                  register={register("url")}
+                />
+                <div className="flex justify-end pt-2 w-full">
+                  <Button
+                    className="w-full mt-2"
+                    type="submit"
+                    disabled={createShowMutation.isPending}
+                  >
+                    {createShowMutation.isPending ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="flex">
+                          <Spinner />
+                        </span>
+                      </div>
+                    ) : (
+                      "Agregar"
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );

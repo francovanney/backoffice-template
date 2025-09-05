@@ -27,7 +27,6 @@ export default function EditEventModal({ show }: EditEventModalProps) {
   const { close } = useModal();
   const fileTypes = ["JPG", "JPEG", "PNG"];
   const [file, setFile] = useState<File | null>(null);
-  const [menuIsOpen, setMenuIsOpen] = useState(false);
 
   const initialValues = {
     title: show.title,
@@ -192,7 +191,7 @@ export default function EditEventModal({ show }: EditEventModalProps) {
                       ];
 
                       return (
-                        <div className="w-full max-w-full min-w-0 overflow-hidden">
+                        <div className="w-full max-w-full min-w-0">
                           <Select
                             isMulti
                             options={options}
@@ -203,21 +202,28 @@ export default function EditEventModal({ show }: EditEventModalProps) {
                               const values = Array.isArray(selected)
                                 ? selected.map((opt) => opt.value)
                                 : [];
-                              if (values.length < 3) {
+                              if (values.length <= 3) {
                                 field.onChange(values);
-                                setMenuIsOpen(true);
-                              } else if (values.length === 3) {
-                                field.onChange(values);
-                                setMenuIsOpen(false);
                               } else {
                                 toast.error("Máximo 3 categorías permitidas");
                               }
                             }}
                             placeholder="Selecciona hasta 3 categorías"
                             closeMenuOnSelect={false}
-                            menuIsOpen={menuIsOpen}
-                            onMenuOpen={() => setMenuIsOpen(true)}
-                            onMenuClose={() => setMenuIsOpen(false)}
+                            className="w-full"
+                            classNamePrefix="react-select"
+                            isSearchable={true}
+                            isClearable={true}
+                            menuPortalTarget={document.body}
+                            menuPosition="absolute"
+                            menuPlacement="auto"
+                            styles={{
+                              menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+                              menu: (base) => ({
+                                ...base,
+                                zIndex: 9999,
+                              }),
+                            }}
                           />
                         </div>
                       );

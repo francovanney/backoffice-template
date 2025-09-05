@@ -110,200 +110,203 @@ export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
+    <div className="fixed inset-0 z-50 transition-all duration-300 overflow-hidden">
       <div
-        className="absolute inset-0 bg-black/40 transition-opacity duration-300"
+        className="absolute inset-0 bg-black/40 transition-opacity duration-300 opacity-100"
         onClick={(e) => {
           if (e.target === e.currentTarget) close();
         }}
-      />
-      <div className="fixed inset-0 flex items-end md:items-center justify-center p-0 md:p-4 pointer-events-none">
-        <div className="w-full h-full md:h-auto md:max-w-md md:max-h-[90vh] bg-background shadow-lg md:rounded-lg overflow-hidden flex flex-col pointer-events-auto max-w-full">
-          <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0 min-w-0">
-            <h2 className="text-lg font-bold truncate pr-4">Nuevo Comercio</h2>
-            <button
-              onClick={close}
-              className="p-2 hover:bg-gray-100 rounded-md transition-colors flex-shrink-0"
-              aria-label="Cerrar"
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 max-w-full min-w-0">
-            <form
-              className="space-y-4 w-full max-w-full min-w-0"
-              onSubmit={handleSubmit(onSubmit)}
-              id="spot-form"
-            >
-              <FormInput
-                label="Nombre *"
-                type="text"
-                register={register("nombre", {
-                  required: "El nombre es requerido",
-                  maxLength: {
-                    value: 30,
-                    message: "El nombre no puede exceder 30 caracteres",
-                  },
-                })}
-                error={errors.nombre?.message}
-                placeholder="Ingrese el nombre del comercio"
+        style={{ zIndex: 1 }}
+      >
+        <aside
+          className="absolute top-0 right-0 h-full w-full max-w-md bg-background shadow-lg z-50 transition-transform duration-300 pointer-events-auto translate-x-0"
+          style={{ zIndex: 2 }}
+        >
+          <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden">
+            <div className="bg-background px-6 py-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold">Nuevo Comercio</h2>
+              <X
+                className="ml-4 font-bold cursor-pointer"
+                onClick={close}
+                aria-label="Cerrar"
               />
+            </div>
+            <div className="p-6 pt-4 max-w-full min-w-0 overflow-x-hidden flex-1">
+              <form
+                className="space-y-4 w-full max-w-full min-w-0"
+                onSubmit={handleSubmit(onSubmit)}
+                id="spot-form"
+              >
+                <FormInput
+                  label="Nombre Del Comercio"
+                  type="text"
+                  register={register("nombre", {
+                    required: "El nombre es requerido",
+                    maxLength: {
+                      value: 30,
+                      message: "El nombre no puede exceder 30 caracteres",
+                    },
+                  })}
+                  error={errors.nombre?.message}
+                  placeholder="Ingrese el nombre del comercio"
+                />
 
-              <FormInput
-                label="Dirección"
-                type="text"
-                register={register("direccion")}
-                error={errors.direccion?.message}
-                placeholder="Ingrese la dirección"
-              />
+                <FormInput
+                  label="Dirección"
+                  type="text"
+                  register={register("direccion")}
+                  error={errors.direccion?.message}
+                  placeholder="Ingrese la dirección"
+                />
 
-              <FormInput
-                label="Link Dirección (Enlace)"
-                type="text"
-                register={register("link_direccion", {
-                  validate: (value) => {
-                    if (!value) return true;
-                    if (!value.includes("www")) {
-                      return "Debe contener www";
-                    }
-                    return true;
-                  },
-                })}
-                error={errors.link_direccion?.message}
-                placeholder="Ingrese el enlace de la dirección"
-              />
+                <FormInput
+                  label="Link Dirección (Enlace)"
+                  type="text"
+                  register={register("link_direccion", {
+                    validate: (value) => {
+                      if (!value) return true;
+                      if (!value.includes("www")) {
+                        return "Debe contener www";
+                      }
+                      return true;
+                    },
+                  })}
+                  error={errors.link_direccion?.message}
+                  placeholder="Ingrese el enlace de la dirección"
+                />
 
-              <FormInput
-                label="Teléfono"
-                type="text"
-                register={register("telefono", {
-                  pattern: {
-                    value: /^[0-9]*$/,
-                    message: "El teléfono debe contener solo números",
-                  },
-                })}
-                error={errors.telefono?.message}
-                placeholder="Ingrese el número de teléfono"
-              />
+                <FormInput
+                  label="Teléfono"
+                  type="text"
+                  register={register("telefono", {
+                    pattern: {
+                      value: /^[0-9]*$/,
+                      message: "El teléfono debe contener solo números",
+                    },
+                  })}
+                  error={errors.telefono?.message}
+                  placeholder="Ingrese el número de teléfono"
+                />
 
-              <div>
-                <label
-                  htmlFor="logo"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Logo
-                </label>
-                <div className="space-y-3">
-                  <FileUploader
-                    handleChange={handleChange}
-                    name="logo"
-                    types={fileTypes}
-                    multiple={false}
-                    label="Arrastre o suba una imagen"
-                    hoverTitle="Arrastre aquí"
-                  />
-                  {file && (
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-500">
-                        Archivo seleccionado: {file.name}
-                      </p>
-                      <div className="mt-2 relative w-full h-32 border rounded-md overflow-hidden">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt="Vista previa"
-                          className="object-contain w-full h-full"
-                        />
+                <div>
+                  <label
+                    htmlFor="logo"
+                    className="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Logo
+                  </label>
+                  <div className="space-y-3">
+                    <FileUploader
+                      handleChange={handleChange}
+                      name="logo"
+                      types={fileTypes}
+                      multiple={false}
+                      label="Arrastre o suba una imagen"
+                      hoverTitle="Arrastre aquí"
+                    />
+                    {file && (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-500">
+                          Archivo seleccionado: {file.name}
+                        </p>
+                        <div className="mt-2 relative w-full h-32 border rounded-md overflow-hidden">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt="Vista previa"
+                            className="object-contain w-full h-full"
+                          />
+                        </div>
                       </div>
-                    </div>
-                  )}
-                  {logoError && (
-                    <p className="mt-1 text-sm text-red-600">{logoError}</p>
-                  )}
+                    )}
+                    {logoError && (
+                      <p className="mt-1 text-sm text-red-600">{logoError}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              <FormInput
-                label="Descripción"
-                type="text"
-                register={register("descripcion", {
-                  maxLength: {
-                    value: 50,
-                    message: "La descripción no puede exceder 50 caracteres",
-                  },
-                })}
-                error={errors.descripcion?.message}
-                placeholder="Ingrese la descripción"
-              />
+                <FormInput
+                  label="Descripción"
+                  type="text"
+                  register={register("descripcion", {
+                    maxLength: {
+                      value: 50,
+                      message: "La descripción no puede exceder 50 caracteres",
+                    },
+                  })}
+                  error={errors.descripcion?.message}
+                  placeholder="Ingrese la descripción"
+                />
 
-              <FormInput
-                label="Instagram"
-                type="text"
-                register={register("instagram")}
-                error={errors.instagram?.message}
-                placeholder="usuario"
-                span="https://instagram.com/"
-              />
+                <FormInput
+                  label="Instagram"
+                  type="text"
+                  register={register("instagram")}
+                  error={errors.instagram?.message}
+                  placeholder="usuario"
+                  span="https://instagram.com/"
+                />
 
-              <FormInput
-                label="Reservas (Enlace)"
-                type="text"
-                register={register("reservas")}
-                error={errors.reservas?.message}
-                placeholder="Información de reservas"
-              />
+                <FormInput
+                  label="Reservas (Enlace)"
+                  type="text"
+                  register={register("reservas")}
+                  error={errors.reservas?.message}
+                  placeholder="Información de reservas"
+                />
 
-              <FormInput
-                label="Menú (Enlace)"
-                type="text"
-                register={register("menu")}
-                error={errors.menu?.message}
-                placeholder="Información del menú"
-              />
+                <FormInput
+                  label="Menú (Enlace)"
+                  type="text"
+                  register={register("menu")}
+                  error={errors.menu?.message}
+                  placeholder="Información del menú"
+                />
 
-              <FormInput
-                label="Delivery (Enlace)"
-                type="text"
-                register={register("delivery")}
-                error={errors.delivery?.message}
-                placeholder="Información de delivery"
-              />
+                <FormInput
+                  label="Delivery (Enlace)"
+                  type="text"
+                  register={register("delivery")}
+                  error={errors.delivery?.message}
+                  placeholder="Información de delivery"
+                />
 
-              <FormInput
-                label="Web (Enlace)"
-                type="text"
-                register={register("web", {
-                  validate: (value) => {
-                    if (!value) return true;
-                    if (!value.includes("www")) {
-                      return "Debe contener www";
-                    }
-                    return true;
-                  },
-                })}
-                error={errors.web?.message}
-                placeholder="Sitio web"
-              />
+                <FormInput
+                  label="Web (Enlace)"
+                  type="text"
+                  register={register("web", {
+                    validate: (value) => {
+                      if (!value) return true;
+                      if (!value.includes("www")) {
+                        return "Debe contener www";
+                      }
+                      return true;
+                    },
+                  })}
+                  error={errors.web?.message}
+                  placeholder="Sitio web"
+                />
 
-              <div className="flex justify-end pt-2">
-                <Button
-                  className="w-full mt-2"
-                  type="submit"
-                  disabled={createSpotMutation.isPending}
-                >
-                  {createSpotMutation.isPending ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="flex">
-                        <Spinner />
-                      </span>
-                    </div>
-                  ) : (
-                    "Crear Comercio"
-                  )}
-                </Button>
-              </div>
-            </form>
+                <div className="flex justify-end pt-2">
+                  <Button
+                    className="w-full mt-2"
+                    type="submit"
+                    disabled={createSpotMutation.isPending}
+                  >
+                    {createSpotMutation.isPending ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="flex">
+                          <Spinner />
+                        </span>
+                      </div>
+                    ) : (
+                      "Crear Comercio"
+                    )}
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
   );
