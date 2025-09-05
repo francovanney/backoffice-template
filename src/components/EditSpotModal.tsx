@@ -137,7 +137,7 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 transition-all duration-300">
+    <div className="fixed inset-0 z-50 transition-all duration-300 overflow-hidden">
       <div
         className="absolute inset-0 bg-black/40 transition-opacity duration-300 opacity-100"
         onClick={(e) => {
@@ -153,7 +153,7 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
             className="absolute left-0 top-0 h-full w-[0.5px] bg-gray-200 rounded-r"
             style={{ zIndex: 3 }}
           />
-          <div className="flex flex-col h-full overflow-y-auto relative">
+          <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden relative">
             <div className="bg-background px-6 py-4 flex items-center justify-between">
               <h2 className="text-lg font-bold">Editar Comercio</h2>
               <X
@@ -163,9 +163,9 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
               />
             </div>
             <hr className=" border-t border-gray-200" />
-            <div className="p-6 pt-4">
+            <div className="p-6 pt-4 max-w-full min-w-0 overflow-x-hidden flex-1">
               <form
-                className="space-y-4"
+                className="space-y-4 w-full max-w-full min-w-0"
                 onSubmit={handleSubmit(onSubmit)}
                 id="edit-spot-form"
               >

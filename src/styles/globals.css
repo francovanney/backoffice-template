@@ -96,3 +96,72 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Prevent horizontal scroll in modals */
+@layer utilities {
+  .modal-container {
+    box-sizing: border-box;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  
+  .modal-container * {
+    box-sizing: border-box;
+  }
+  
+  /* Fix for react-select in modals */
+  .react-select__control {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  
+  .react-select__menu {
+    z-index: 9999 !important;
+  }
+  
+  .react-select__value-container {
+    flex-wrap: wrap !important;
+    max-width: 100% !important;
+  }
+  
+  .react-select__multi-value {
+    max-width: calc(100% - 10px) !important;
+  }
+  
+  .react-select__input-container {
+    max-width: 100% !important;
+  }
+  
+  /* Fix for date inputs causing horizontal scroll */
+  input[type="date"] {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: textfield !important;
+    padding: 0.25rem 0.5rem !important;
+    min-height: 2.5rem !important;
+    height: auto !important;
+  }
+  
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    position: relative !important;
+    right: 0 !important;
+    width: 20px !important;
+    height: 20px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* iOS specific fixes for date input */
+  @supports (-webkit-touch-callout: none) {
+    input[type="date"] {
+      font-size: 16px !important;
+      transform: scale(1) !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+  }
+}

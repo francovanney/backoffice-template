@@ -36,7 +36,25 @@ export const FormInput: React.FC<FormInputProps> = ({
         </div>
       ) : (
         <input
-          className={`w-full border rounded text-md px-2 py-1 ${className}`}
+          className={`w-full border rounded text-md px-2 py-1 max-w-full min-w-0 ${
+            props.type === "date" ? "overflow-hidden" : ""
+          } ${className}`}
+          style={{
+            ...(props.type === "date" && {
+              maxWidth: "100%",
+              width: "100%",
+              minWidth: "0",
+              boxSizing: "border-box",
+              overflow: "hidden",
+              appearance: "none",
+              WebkitAppearance: "none",
+              MozAppearance: "textfield",
+              padding: "0.25rem 0.5rem", // py-1 px-2 equivalent
+              height: "auto",
+              minHeight: "2.5rem",
+            }),
+            ...props.style,
+          }}
           {...register}
           {...props}
         />
