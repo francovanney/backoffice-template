@@ -17,6 +17,7 @@ interface EditSectionModalProps {
     id: number;
     nombre: string;
     seccion_padre: string;
+    seccion_order?: number | null;
   } | null;
 }
 
@@ -26,12 +27,21 @@ const EditSectionModal = ({
   section,
 }: EditSectionModalProps) => {
   const [nombre, setNombre] = useState("");
+  const [seccionOrder, setSeccionOrder] = useState<number | "">(""); 
   const updateSectionMutation = useUpdateSectionMutation();
 
   useEffect(() => {
     if (section) {
+        console.log("Section prop changed typeof section.seccion_order:", section);
+
       setNombre(section.nombre);
-    }
+      setSeccionOrder(
+        typeof section.seccion_order === "number" ? section.seccion_order : ""
+      );
+    } else {
+        setNombre("");
+        setSeccionOrder("");
+      }
   }, [section]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -48,6 +58,7 @@ const EditSectionModal = ({
       await updateSectionMutation.mutateAsync({
         id: section.id,
         nombre: nombre.trim(),
+        seccion_order: Number(seccionOrder),
         seccion_padre: section.seccion_padre,
       });
 
@@ -61,6 +72,7 @@ const EditSectionModal = ({
 
   const handleClose = () => {
     setNombre("");
+    setSeccionOrder("");
     onOpenChange(false);
   };
 
@@ -82,6 +94,21 @@ const EditSectionModal = ({
                 placeholder="Ej: Bares, Kioskos..."
                 required
               />
+            </div>
+
+            <div>
+                <FormInput
+                    label="Orden de la sección"
+                    type="number"
+                    value={seccionOrder}
+                    onChange={(e) =>
+                        setSeccionOrder(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                        )
+                    }
+                    placeholder="Ej: 1, 2, .. (mayor o igual a 0)"
+                    min={0}
+                />
             </div>
 
             <div className="flex justify-end gap-2">

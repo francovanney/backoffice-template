@@ -29,6 +29,7 @@ type SpotFormData = {
   menu?: string;
   delivery?: string;
   web?: string;
+  lugares_order?: number;
 };
 
 export default function EditSpotModal({ spot }: EditSpotModalProps) {
@@ -75,6 +76,7 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
       menu: "",
       delivery: "",
       web: "",
+      lugares_order: 0,
     },
   });
 
@@ -91,6 +93,7 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
         menu: spot.menu || "",
         delivery: spot.delivery || "",
         web: spot.web || "",
+        lugares_order: spot.lugares_order || 0,
       });
     }
   }, [spot, reset]);
@@ -114,6 +117,7 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
       if (data.menu) formData.append("menu", data.menu);
       if (data.delivery) formData.append("delivery", data.delivery);
       if (data.web) formData.append("web", data.web);
+      if (data.lugares_order) formData.append("lugares_order", data.lugares_order.toString());
 
       formData.append("seccion_id", spot.seccion_id.toString());
 
@@ -329,6 +333,20 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
                   error={errors.web?.message}
                   placeholder="Sitio web"
                 />
+
+                <FormInput
+                    label="Orden"
+                    type="number"
+                    register={register("lugares_order", {
+                        required: "El orden es obligatorio",
+                        min: {
+                        value: 0,
+                        message: "Debe ser mayor o igual a 0",
+                        },
+                    })}
+                    error={errors.lugares_order?.message}
+                    placeholder="Ej: 1, 2, .. (mayor o igual a 0)"
+                />     
 
                 <div className="flex justify-end pt-2">
                   <Button
