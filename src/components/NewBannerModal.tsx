@@ -124,7 +124,7 @@ export default function NewBannerModal() {
                 <FormInput
                   label="URL (opcional)"
                   type="text"
-                  placeholder="https://tu-sitio.com/promo"
+                  placeholder="www.tu-sitio.com/promo"
                   register={register("banner_url")}
                   error={errors.banner_url?.message}
                 />

@@ -15,6 +15,7 @@ import Login from "./components/Login";
 import LeftMenu from "./views/LeftMenu";
 import ConditionalFilter from "./components/ConditionalFilter";
 import { API_URL } from "./const/apiUrls";
+import ConditionalFilterBanner from "./components/ConditionalFilterBanner";
 
 const auth = getAuth(app);
 
@@ -128,6 +129,10 @@ const App = () => {
 
                     <div className="flex-1 h-full flex flex-col md:ml-64">
                       <ConditionalFilter
+                        search={search}
+                        setSearch={setSearch}
+                      />
+                      <ConditionalFilterBanner
                         search={search}
                         setSearch={setSearch}
                       />

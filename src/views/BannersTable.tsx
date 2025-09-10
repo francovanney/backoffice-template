@@ -34,23 +34,14 @@ import { usePagination } from "@/hooks/usePagination";
 // Hooks análogos a los de shows
 import { useBannersQuery } from "@/services/useBannersQuery";
 import { useDeleteBannerMutation } from "@/services/useDeleteBannerMutation";
-import FilterBanner from "@/components/FilterBannerComponent";
 
-type Banner = {
-  id: number;
-  image_url: string | null;
-  banner_name: string;
-  banner_url: string | null;
-  banner_order: number | null;
-  available: boolean;
-  created_at: string | null; // ISO
-  updated_at: string | null; // ISO
-};
+interface EventsTableProps {
+    search: string;
+  }
 
-const BannersTable = () => {
+const BannersTable = ({ search }: EventsTableProps)  => {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 15;
-  const [search, setSearch] = useState("");
 
   const {
     data: response,
@@ -62,7 +53,7 @@ const BannersTable = () => {
   const { openModal, close } = useModal();
   const deleteBannerMutation = useDeleteBannerMutation();
 
-  const banners: Banner[] = response?.data || [];
+  const banners = response?.data || [];
   const totalPages = response?.totalPages || 0;
   const total = response?.total || 0;
 
@@ -75,8 +66,9 @@ const BannersTable = () => {
     setCurrentPage(1);
   }, [search]);
 
-  const handlePageChange = (page: number) => setCurrentPage(page);
-
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
   const SkeletonTableRows = () => (
     <>
       {Array.from({ length: pageSize }).map((_, i) => (
@@ -121,10 +113,10 @@ const BannersTable = () => {
             <TableHeader>
               <TableRow>
                 <TableHead className="text-center bg-white w-16">Imagen</TableHead>
-                <TableHead className="bg-white w-64">Nombre</TableHead>
-                <TableHead className="bg-white w-64">URL</TableHead>
-                <TableHead className="text-center bg-white w-24">Orden</TableHead>
-                <TableHead className="text-center bg-white w-24">Disponible</TableHead>
+                <TableHead className="bg-white w-48">Nombre</TableHead>
+                <TableHead className="bg-white w-64 hidden lg:table-cell">URL</TableHead>
+                <TableHead className="text-center bg-white w-24 hidden lg:table-cell">Orden</TableHead>
+                <TableHead className="text-center bg-white w-24 hidden lg:table-cell">Disponible</TableHead>
                 <TableHead className="text-center bg-white w-24">Acciones</TableHead>
               </TableRow>
             </TableHeader>
@@ -149,16 +141,14 @@ const BannersTable = () => {
   return (
     <div className="w-full h-full flex flex-col overflow-hidden">
       <div className="flex-shrink-0 bg-white border-b shadow-sm">
-        <FilterBanner search={search} setSearch={setSearch} />
-
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="text-center bg-white w-16">Imagen</TableHead>
-              <TableHead className="bg-white w-64">Nombre</TableHead>
-              <TableHead className="bg-white w-64">URL</TableHead>
-              <TableHead className="text-center bg-white w-24">Orden</TableHead>
-              <TableHead className="text-center bg-white w-24">Disponible</TableHead>
+              <TableHead className="bg-white w-48">Nombre</TableHead>
+              <TableHead className="bg-white w-64 hidden lg:table-cell">URL</TableHead>
+              <TableHead className="text-center bg-white w-24 hidden lg:table-cell">Orden</TableHead>
+              <TableHead className="text-center bg-white w-24 hidden lg:table-cell">Disponible</TableHead>
               <TableHead className="text-center bg-white w-24">Acciones</TableHead>
             </TableRow>
           </TableHeader>
@@ -201,11 +191,11 @@ const BannersTable = () => {
                   </div>
                 </TableCell>
 
-                <TableCell className="font-medium w-64">
+                <TableCell className="font-medium w-48">
                   <span>{banner.banner_name}</span>
                 </TableCell>
 
-                <TableCell className="w-64">
+                <TableCell className="w-64 hidden lg:table-cell">
                   {banner.banner_url ? (
                     <a
                       href={banner.banner_url}
@@ -221,11 +211,11 @@ const BannersTable = () => {
                   )}
                 </TableCell>
 
-                <TableCell className="text-center w-24">
+                <TableCell className="text-center w-24 hidden lg:table-cell">
                   {banner.banner_order ?? 0}
                 </TableCell>
 
-                <TableCell className="text-center w-24">
+                <TableCell className="text-center w-24 hidden lg:table-cell">
                   <Badge variant={banner.available ? "default" : "secondary"}
                          className={banner.available ? "bg-green-100 text-green-700" : "bg-gray-200 text-gray-700"}>
                     {banner.available ? "Sí" : "No"}
@@ -290,8 +280,8 @@ const BannersTable = () => {
       </div>
 
       <div className="flex-shrink-0 p-4 border-t bg-white">
-        <div className="relative flex items-center justify-center">
-          <div className="absolute left-0 text-xs text-muted-foreground">
+        <div className="flex flex-col gap-3 md:relative">
+          <div className="text-xs text-muted-foreground text-center md:text-left md:absolute md:left-0 md:top-1/2 md:-translate-y-1/2 hidden md:block">
             Mostrando {(currentPage - 1) * pageSize + 1} a{" "}
             {Math.min(currentPage * pageSize, total)} de {total} resultados
           </div>

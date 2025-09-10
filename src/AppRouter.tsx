@@ -13,7 +13,7 @@ const AppRouter = ({ search }: AppRouterProps) => {
     <Routes>
       <Route path="/events" element={<EventsTable search={search} />} />
       <Route path="/negocios" element={<Spots />} />
-      <Route path="/banners" element={<BannersTable />} />
+      <Route path="/banners" element={<BannersTable search={search} />} />
       <Route path="/config" element={<Config />} />
       <Route path="*" element={<Navigate to="/events" replace />} />
     </Routes>

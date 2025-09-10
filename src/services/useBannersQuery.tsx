@@ -19,57 +19,15 @@ const fetchBannersPage = async (
   ): Promise<IPaginatedBanners> => {
     const params = new URLSearchParams();
     if (searchTerm) params.append("search", searchTerm);
-    params.append("page", String(pageNum));
-    params.append("pageSize", String(size));
+    params.append("page", pageNum.toString());
+    params.append("pageSize", size.toString());
   
-    const url = `${API_BANNERS_URL}${params.toString() ? `?${params.toString()}` : ""}`;
-    const res = await fetchGet(url);
+    const queryString = params.toString();
+    const res = await fetchGet(
+      `${API_BANNERS_URL}${queryString ? `?${queryString}` : ""}`
+    );
   
-    // Caso A: backend devuelve objeto paginado { data, total, totalPages, page?, pageSize? }
-    if (res && Array.isArray(res.data)) {
-      const total = typeof res.total === "number" ? res.total : res.data.length;
-      const pageSize = typeof res.pageSize === "number" ? res.pageSize : size;
-      const page = typeof res.page === "number" ? res.page : pageNum;
-      const totalPages =
-        typeof res.totalPages === "number" ? res.totalPages : Math.max(1, Math.ceil(total / pageSize));
-      return { data: res.data, page, pageSize, total, totalPages };
-    }
-  
-    // Caso B: backend devuelve array plano Banner[]
-    if (Array.isArray(res)) {
-      const filtered = searchTerm
-        ? res.filter((b: Banner) =>
-            (b.banner_name ?? "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (b.banner_url ?? "").toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        : res;
-  
-      const total = filtered.length;
-      const start = (pageNum - 1) * size;
-      const end = start + size;
-      const pageSlice = filtered.slice(start, end);
-  
-      return {
-        data: pageSlice,
-        page: pageNum,
-        pageSize: size,
-        total,
-        totalPages: Math.max(1, Math.ceil(total / size)),
-      };
-    }
-  
-    // Caso C: backend devuelve { rows: Banner[] }
-    if (res && Array.isArray(res.rows)) {
-      const list = res.rows;
-      const total = typeof res.total === "number" ? res.total : list.length;
-      const pageSize = typeof res.pageSize === "number" ? res.pageSize : size;
-      const page = typeof res.page === "number" ? res.page : pageNum;
-      const totalPages =
-        typeof res.totalPages === "number" ? res.totalPages : Math.max(1, Math.ceil(total / pageSize));
-      return { data: list, page, pageSize, total, totalPages };
-    }
-  
-    throw new Error("Respuesta inesperada del endpoint /banners");
+    return res as IPaginatedBanners;
   };
 
 export function useBannersQuery(
