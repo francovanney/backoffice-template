@@ -22,6 +22,7 @@ const NewSectionModal = ({
   sectionParent,
 }: NewSectionModalProps) => {
   const [nombre, setNombre] = useState("");
+  const [seccionOrder, setSeccionOrder] = useState<number | "">("");
   const createSectionMutation = useCreateSectionMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -36,10 +37,12 @@ const NewSectionModal = ({
       await createSectionMutation.mutateAsync({
         nombre: nombre.trim(),
         seccion_padre: sectionParent,
+        seccion_order: Number(seccionOrder),
       });
 
       toast.success("Sección creada correctamente");
       setNombre("");
+      setSeccionOrder("");
       onOpenChange(false);
     } catch (error) {
       toast.error("Error al crear la sección");
@@ -49,6 +52,7 @@ const NewSectionModal = ({
 
   const handleClose = () => {
     setNombre("");
+    setSeccionOrder("");
     onOpenChange(false);
   };
 
@@ -72,6 +76,19 @@ const NewSectionModal = ({
                 onChange={(e) => setNombre(e.target.value)}
                 placeholder="Ej: Bares, Kioskos..."
                 required
+              />
+
+              <FormInput
+                    label="Orden de la sección"
+                    type="number"
+                    value={seccionOrder}
+                    onChange={(e) =>
+                        setSeccionOrder(
+                        e.target.value === "" ? "" : Number(e.target.value)
+                        )
+                    }
+                    placeholder="Ej: 1, 2, .. (mayor o igual a 0)"
+                    min={0}
               />
             </div>
 

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Toaster } from "react-hot-toast";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
-import { BrowserRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router, useLocation } from "react-router-dom";
 
 import { app } from "./lib/firebaseConfig/firebase";
 import { useDebouncedValue } from "./hooks/useDebouncedValue";
@@ -18,12 +18,35 @@ import { API_URL } from "./const/apiUrls";
 
 const auth = getAuth(app);
 
+function RouteScopedShell() {
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const [searchByRoute, setSearchByRoute] = useState<Record<string, string>>({});
+
+  const search = searchByRoute[currentPath] ?? "";
+  const setSearch = (val: string) =>
+    setSearchByRoute((prev) => ({ ...prev, [currentPath]: val }));
+
+  const debouncedSearch = useDebouncedValue(search, 600);
+
+  return (
+    <>
+      <ConditionalFilter search={search} setSearch={setSearch} />
+
+      <div className="flex-1 overflow-auto">
+        <GlobalLayout>
+          <AppRouter search={debouncedSearch} />
+        </GlobalLayout>
+      </div>
+    </>
+  );
+}
+
 const App = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [search, setSearch] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
-  const debouncedSearch = useDebouncedValue(search, 600);
 
   const sendTokenToBackend = useCallback(
     async (firebaseUser: User, forceRefresh = false) => {
@@ -127,15 +150,7 @@ const App = () => {
                     )}
 
                     <div className="flex-1 h-full flex flex-col md:ml-64">
-                      <ConditionalFilter
-                        search={search}
-                        setSearch={setSearch}
-                      />
-                      <div className="flex-1 overflow-auto">
-                        <GlobalLayout>
-                          <AppRouter search={debouncedSearch} />
-                        </GlobalLayout>
-                      </div>
+                      <RouteScopedShell />
                     </div>
                   </main>
                 </>

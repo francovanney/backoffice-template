@@ -5,6 +5,7 @@ import { API_SECTIONS_URL } from "@/const/apiUrls";
 export interface Seccion {
   id: number;
   nombre: string;
+  seccion_order: number;
   seccion_padre: string;
 }
 

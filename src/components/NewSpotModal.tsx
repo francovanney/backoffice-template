@@ -28,6 +28,7 @@ type SpotFormData = {
   menu?: string;
   delivery?: string;
   web?: string;
+  lugares_order?: number;
 };
 
 export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
@@ -55,6 +56,7 @@ export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
       menu: "",
       delivery: "",
       web: "",
+      lugares_order: 0,
     },
   });
 
@@ -93,6 +95,7 @@ export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
       if (data.menu) formData.append("menu", data.menu);
       if (data.delivery) formData.append("delivery", data.delivery);
       if (data.web) formData.append("web", data.web);
+      if (data.lugares_order) formData.append("lugares_order", data.lugares_order.toString());
 
       if (file) {
         formData.append("logo", file);
@@ -285,6 +288,20 @@ export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
                   error={errors.web?.message}
                   placeholder="Sitio web"
                 />
+
+                <FormInput
+                    label="Orden de la sección"
+                    type="number"
+                    register={register("lugares_order", {
+                        required: "El orden es obligatorio",
+                        min: {
+                        value: 0,
+                        message: "Debe ser mayor o igual a 0",
+                        },
+                    })}
+                    error={errors.lugares_order?.message}
+                    placeholder="Ej: 1, 2, .. (mayor o igual a 0)"
+                />             
 
                 <div className="flex justify-end pt-2">
                   <Button

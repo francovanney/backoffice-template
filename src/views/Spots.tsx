@@ -108,6 +108,7 @@ const Spots = () => {
   const [sectionToEdit, setSectionToEdit] = useState<{
     id: number;
     nombre: string;
+    seccion_order?: number;
     seccion_padre: string;
   } | null>(null);
 
@@ -178,11 +179,13 @@ const Spots = () => {
   const handleEditSection = (section: {
     id: number;
     nombre: string;
+    seccion_order?: number;
     seccion_padre?: string;
   }) => {
     setSectionToEdit({
       id: section.id,
       nombre: section.nombre,
+      seccion_order: section.seccion_order,
       seccion_padre: section.seccion_padre || selectedSectionType!,
     });
     setIsEditSectionModalOpen(true);
@@ -392,6 +395,9 @@ const Spots = () => {
                     (ID: {seccion.id})
                   </span> */}
                 </h2>
+                {seccion.seccion_order !== 0 && (
+                    <p className="text-gray-400 text-sm">Orden: {seccion.seccion_order}</p>
+                )}
               </button>
               {openSubsections.has(seccion.id) && (
                 <div className="flex gap-1">

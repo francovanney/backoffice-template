@@ -5,11 +5,13 @@ import { API_URL } from "@/const/apiUrls";
 interface CreateSectionRequest {
   nombre: string;
   seccion_padre: string;
+  seccion_order?: number;
 }
 
 interface CreateSectionResponse {
   id: number;
   nombre: string;
+  seccion_order: number;
   seccion_padre: string;
   created_at: string;
   updated_at: string;
