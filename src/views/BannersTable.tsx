@@ -62,6 +62,11 @@ const BannersTable = ({ search }: EventsTableProps)  => {
     totalPages,
   });
 
+  const formatUrl = (url?: string | null): string | undefined => {
+    if (!url) return undefined;                 
+    return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+  };
+
   useEffect(() => {
     setCurrentPage(1);
   }, [search]);
@@ -196,19 +201,19 @@ const BannersTable = ({ search }: EventsTableProps)  => {
                 </TableCell>
 
                 <TableCell className="w-64 hidden lg:table-cell">
-                  {banner.banner_url ? (
-                    <a
-                      href={banner.banner_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-blue-600 hover:underline"
-                    >
-                      <WebIcon className="h-4 w-4" />
-                      <span className="truncate max-w-[220px]">{banner.banner_url}</span>
-                    </a>
-                  ) : (
-                    <span className="text-muted-foreground">—</span>
-                  )}
+                    {banner.banner_url ? (
+                        <a
+                        href={formatUrl(banner.banner_url)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 text-blue-600 hover:underline"
+                        >
+                        <WebIcon className="h-4 w-4" />
+                        <span className="truncate max-w-[220px]">{banner.banner_url}</span>
+                        </a>
+                    ) : (
+                        <span className="text-muted-foreground">—</span>
+                    )}
                 </TableCell>
 
                 <TableCell className="text-center w-24 hidden lg:table-cell">

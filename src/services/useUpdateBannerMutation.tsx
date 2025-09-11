@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { fetchPut } from "@/lib/fetch";
-import { API_BANNERS_UPDATE_URL } from "@/const/apiUrls";
+import { API_BANNERS_URL } from "@/const/apiUrls";
 
 type UpdateBannerParams = {
   id: number | string;
@@ -8,7 +8,7 @@ type UpdateBannerParams = {
 };
 
 export const updateBanner = async ({ id, data }: UpdateBannerParams) => {
-  const url = `${API_BANNERS_UPDATE_URL}/${id}`;
+  const url = `${API_BANNERS_URL}/${id}`;
   return await fetchPut(url, data);
 };
 
