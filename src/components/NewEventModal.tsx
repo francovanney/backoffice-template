@@ -263,7 +263,7 @@ export default function NewEventModal({ event }: NewEventModalProps) {
                   placeholder="usuario"
                   span="https://instagram.com/"
                 />
-                <FormInput label="Web" type="text" register={register("web")} />
+                <FormInput label="Web (Enlace)" type="text" register={register("web")} />
 
                 <div className="space-y-2 w-full">
                   <label className="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">

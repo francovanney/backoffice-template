@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { useModal } from "@/hooks/useModal";
 import Filter from "./FilterComponent";
@@ -11,7 +12,22 @@ interface ConditionalFilterProps {
 
 const ConditionalFilter = ({ search, setSearch }: ConditionalFilterProps) => {
   const { openModal } = useModal();
-  const { pathname } = useLocation();
+  const location = useLocation();
+  const pathname = location.pathname;
+
+  // Guarda el último pathname para detectar transiciones reales de ruta
+  const prevPathnameRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    const prev = prevPathnameRef.current;
+    if (prev !== pathname) {
+      // Solo limpiar cuando realmente ENTRO a /events o /banners
+      if (pathname === "/events" || pathname === "/banners") {
+        setSearch("");
+      }
+      prevPathnameRef.current = pathname;
+    }
+  }, [pathname, setSearch]);
 
   if (pathname === "/events") {
     return (
