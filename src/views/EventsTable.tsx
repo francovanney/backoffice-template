@@ -130,7 +130,7 @@ const EventsTable = ({ search }: EventsTableProps) => {
                   Fecha
                 </TableHead>
                 <TableHead className="bg-white w-32 hidden lg:table-cell">
-                  Venue
+                  Lugar
                 </TableHead>
                 <TableHead className="bg-white w-48 hidden lg:table-cell">
                   Dirección
@@ -181,7 +181,7 @@ const EventsTable = ({ search }: EventsTableProps) => {
                 Fecha
               </TableHead>
               <TableHead className="bg-white w-32 hidden lg:table-cell">
-                Venue
+                Lugar
               </TableHead>
               <TableHead className="bg-white w-48 hidden lg:table-cell">
                 Dirección

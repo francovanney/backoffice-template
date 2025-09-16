@@ -193,7 +193,7 @@ const SpotsTable = ({
                   Web
                 </TableHead>
                 <TableHead className="text-center bg-white w-20 hidden md:table-cell">
-                  Teléfono
+                  Orden
                 </TableHead>
                 <TableHead className="text-center bg-white w-24">
                   Acciones
@@ -238,7 +238,7 @@ const SpotsTable = ({
                 Web
               </TableHead>
               <TableHead className="text-center bg-white w-20 hidden md:table-cell">
-                Teléfono
+                Orden
               </TableHead>
               <TableHead className="text-center bg-white w-24">
                 Acciones
@@ -310,14 +310,7 @@ const SpotsTable = ({
                     ) : null}
                   </TableCell>
                   <TableCell className="text-center w-20 hidden md:table-cell">
-                    {spot.telefono ? (
-                      <a
-                        href={`tel:${spot.telefono}`}
-                        className="text-green-500 hover:scale-110 transition-transform inline-block"
-                      >
-                        <Phone className="h-5 w-5 mx-auto" />
-                      </a>
-                    ) : null}
+                    {spot.lugares_order ? spot.lugares_order : null}
                   </TableCell>
                   <TableCell className="text-center w-24">
                     <div className="flex gap-2 justify-center">

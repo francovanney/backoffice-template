@@ -1,4 +1,4 @@
-import { Home, Store, Settings } from "lucide-react";
+import { Home, Store, Settings, Megaphone } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 interface LeftMenuProps {
@@ -9,6 +9,7 @@ interface LeftMenuProps {
 const menu = [
   { label: "Eventos", icon: Home, path: "/events" },
   { label: "Negocios", icon: Store, path: "/negocios" },
+  { label: "Banners", icon: Megaphone, path: "/banners" },
   { label: "Configuración", icon: Settings, path: "/config" },
 ];
 

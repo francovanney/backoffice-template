@@ -16,5 +16,6 @@ export interface Spot {
   youtube: string;
   seccion_id: number;
   seccion_nombre: string;
+  lugares_order: number;
   seccion_padre: string;
 }
