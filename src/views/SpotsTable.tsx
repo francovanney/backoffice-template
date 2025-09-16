@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 
 // External libraries
-import { Phone } from "lucide-react";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import toast from "react-hot-toast";
 
