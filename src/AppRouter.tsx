@@ -3,7 +3,8 @@ import EventsTable from "./views/EventsTable";
 import Spots from "./views/Spots";
 import Config from "./views/Config";
 import BannersTable from "./views/BannersTable";
-
+import Info from "./views/Info";
+import Manual from "./views/Manual";
 interface AppRouterProps {
   search: string;
 }
@@ -15,6 +16,8 @@ const AppRouter = ({ search }: AppRouterProps) => {
       <Route path="/negocios" element={<Spots />} />
       <Route path="/banners" element={<BannersTable search={search} />} />
       <Route path="/config" element={<Config />} />
+      <Route path="/info" element={<Info />} />
+      <Route path="/manual" element={<Manual />} />
       <Route path="*" element={<Navigate to="/events" replace />} />
     </Routes>
   );
