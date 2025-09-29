@@ -73,8 +73,7 @@ export default function Manual() {
             {isShortcutsOpen && (
               <div className="px-4 pb-4 space-y-6">
                 <span className="text-xs text-gray-600 block">
-                  Agrega los iconos en la sección banners y agregarle el
-                  correspondiente orden.
+                  Agrega los iconos en la sección banners y agregarle el correspondiente orden. El campo URL se deja vacío.
                 </span>
 
                 <div className="w-full max-w-3xl">

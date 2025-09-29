@@ -145,7 +145,6 @@ export default function EditBannerModal({ banner }: EditBannerModalProps) {
                   register={register("banner_url", {
                     validate: (value) => {
                       if (!value) return true;
-                      if (!value.includes("www")) return "Debe contener www";
                       return true;
                     },
                   })}
