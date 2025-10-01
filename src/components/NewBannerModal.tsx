@@ -36,7 +36,7 @@ export default function NewBannerModal() {
       banner_url: "",
       banner_order: 0,
       available: true,
-      image_url: "", // solo para mostrar error debajo del uploader
+      image_url: "", 
     },
   });
 
@@ -59,14 +59,13 @@ export default function NewBannerModal() {
     banner_url?: string;
     banner_order?: number;
     available?: boolean;
-    image_url?: string; // solo para mensajes de error en el form
+    image_url?: string; 
   };
 
   const createBannerMutation = useCreateBannerMutation();
   const queryClient = useQueryClient();
 
   const onSubmit = (data: BannerFormData) => {
-    // El backend exige SIEMPRE un archivo 'image'
     if (!file) {
       setError("image_url", { type: "manual", message: "La imagen es obligatoria" });
       return;
@@ -77,7 +76,7 @@ export default function NewBannerModal() {
     if (data.banner_url !== undefined) formData.append("banner_url", data.banner_url);
     if (typeof data.banner_order === "number") formData.append("banner_order", String(data.banner_order));
     if (typeof data.available === "boolean") formData.append("available", String(data.available));
-    formData.append("image", file); // << el backend espera 'image'
+    formData.append("image", file); 
 
     createBannerMutation.mutate(formData, {
       onSuccess: () => {
