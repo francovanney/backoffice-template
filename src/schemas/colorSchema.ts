@@ -1,7 +1,21 @@
 import * as yup from "yup";
 
 export const colorSchema = yup.object({
-  color: yup
+  primary: yup
+    .string()
+    .required("El color es requerido")
+    .matches(
+      /^#[0-9A-Fa-f]{6}$/,
+      "El color debe ser un código hexadecimal válido (ej: #FF0000)"
+    ),
+  general: yup
+    .string()
+    .required("El color es requerido")
+    .matches(
+      /^#[0-9A-Fa-f]{6}$/,
+      "El color debe ser un código hexadecimal válido (ej: #FF0000)"
+    ), 
+  background: yup
     .string()
     .required("El color es requerido")
     .matches(
@@ -11,5 +25,7 @@ export const colorSchema = yup.object({
 });
 
 export type ConfigFormData = {
-  color: string;
+  general: string;    
+  primary: string;    
+  background: string; 
 };
