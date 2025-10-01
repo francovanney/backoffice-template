@@ -16,4 +16,5 @@ export const API_COLORS = `${API_URL}/colors`;
 export const API_SETTINGS = `${API_URL}/settings`;
 export const API_BRANDING = `${API_URL}/branding`;
 export const API_BANNERS_URL = `${API_URL}/banners`;
+export const API_INFO_URL = `${API_URL}/info`;
 

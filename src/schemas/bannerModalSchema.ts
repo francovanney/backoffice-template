@@ -5,7 +5,7 @@ export const bannerModalSchema = yup.object().shape({
     .string()
     .required("Nombre es un campo obligatorio")
     .max(255, "Máximo 255 caracteres"),
-
+/*
   banner_url: yup
     .string()
     .max(255, "Máximo 255 caracteres")
@@ -13,7 +13,7 @@ export const bannerModalSchema = yup.object().shape({
         if (!value) return true; 
         return value.includes("www");
       }),
-
+*/
   banner_order: yup
     .number()
     .typeError("Debe ser un número")
