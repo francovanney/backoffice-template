@@ -417,9 +417,12 @@ const Config = () => {
                       {/* GENERAL */}
                       <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                            <h3 className="text-lg font-medium">Color General</h3>
+                            <h3 className="text-lg font-medium">Color Resaltado</h3>
                             <ColorDot color={previewGeneral} />
                         </div>
+                        <span className="text-xs text-gray-600 block">
+                            Este color se verá reflejado en botones, seleccionado de sección y resaltados de palabras.
+                        </span>
                         <div className="w-full overflow-hidden max-w-2xl">
                           <Controller
                             name="general"
@@ -552,9 +555,12 @@ const Config = () => {
                       {/* PRIMARY */}
                       <div className="space-y-3">
                         <div className="flex items-center gap-2">
-                            <h3 className="text-lg font-medium">Color Primario</h3>
+                            <h3 className="text-lg font-medium">Color Base</h3>
                             <ColorDot color={previewPrimary} />
                         </div>  
+                        <span className="text-xs text-gray-600 block">
+                            Este color se verá reflejado en la barra de secciones y en el pie de página.
+                        </span>
                         <div className="w-full overflow-hidden max-w-2xl">
                           <Controller
                             name="primary"
@@ -675,7 +681,7 @@ const Config = () => {
                         <hr className="my-4 border-gray-300" />
 
                         <div className="space-y-3">
-                          <h3 className="text-lg font-medium">Banner</h3>
+                          <h3 className="text-lg font-medium">Banner principal</h3>
                           <div className="space-y-3">
                             {bannerFile && (
                               <div className="mt-2">
