@@ -196,7 +196,7 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
                 />
 
                 <FormInput
-                  label="Link Dirección (Enlace)"
+                  label="Link de Google a Dirección (Enlace)"
                   type="text"
                   register={register("link_direccion", {
                     validate: (value) => {
