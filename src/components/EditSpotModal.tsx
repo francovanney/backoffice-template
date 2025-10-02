@@ -196,17 +196,9 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
                 />
 
                 <FormInput
-                  label="Link de Google a Dirección (Enlace)"
+                  label="Link de Google Maps de Dirección (Enlace)"
                   type="text"
-                  register={register("link_direccion", {
-                    validate: (value) => {
-                      if (!value) return true;
-                      if (!value.includes("www")) {
-                        return "Debe contener www";
-                      }
-                      return true;
-                    },
-                  })}
+                  register={register("link_direccion")}
                   error={errors.link_direccion?.message}
                   placeholder="Ingrese el enlace de la dirección"
                 />
