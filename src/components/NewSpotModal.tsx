@@ -224,8 +224,8 @@ export default function NewSpotModal({ seccionId }: NewSpotModalProps) {
                   type="text"
                   register={register("descripcion", {
                     maxLength: {
-                      value: 50,
-                      message: "La descripción no puede exceder 50 caracteres",
+                      value: 75,
+                      message: "La descripción no puede exceder 75 caracteres",
                     },
                   })}
                   error={errors.descripcion?.message}

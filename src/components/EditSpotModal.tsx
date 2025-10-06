@@ -269,8 +269,8 @@ export default function EditSpotModal({ spot }: EditSpotModalProps) {
                   type="text"
                   register={register("descripcion", {
                     maxLength: {
-                      value: 50,
-                      message: "La descripción no puede exceder 50 caracteres",
+                      value: 75,
+                      message: "La descripción no puede exceder 75 caracteres",
                     },
                   })}
                   error={errors.descripcion?.message}
